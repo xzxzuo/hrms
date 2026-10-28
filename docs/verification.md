@@ -16,3 +16,7 @@
 2026-10-28 16:02 Europe/Stockholm，`mvn -B verify` BUILD SUCCESS：13 tests，0 failures/errors/skipped，24.854s。
 新增交易测试11项：20用户争最后一间三晚库存、某晚不足全回滚、同键20并发幂等与异义冲突、重复支付/退款、12轮支付-超时-取消三方竞争、支付后扫描不释放、签名拒绝与失败支付和券返还、真实MySQL反向锁死锁重试、优惠券同键10并发、部分日期重叠、实体房号入住退房。
 发现并修复：同报价锁竞争后必须再次检查已提交幂等订单，避免重复请求被已锁定优惠券误拒绝。真实死锁测试验证事务外重试，最终两行各增加2，失败事务没有残留更新。
+
+## Phase 3
+
+2026-10-28 16:03 Europe/Stockholm，`mvn -B verify`：15 tests，0 failures/errors/skipped，25.619s，BUILD SUCCESS。缓存测试验证命中、空值30s、事务提交后失效、Redis真实暂停时回源且普通下单正确。Redisson配置lazy initialization，避免Redis不在线阻止普通业务启动；超时和重试有界。缓存前后性能对比脚本与实测记录将在综合验收提供，当前不填QPS。
