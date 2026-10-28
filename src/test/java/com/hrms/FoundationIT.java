@@ -1,7 +1,6 @@
 package com.hrms;
 import com.hrms.shared.*;import com.hrms.pricing.PricingService;import java.util.*;import java.time.*;import org.junit.jupiter.api.*;import static org.assertj.core.api.Assertions.*;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.boot.test.context.SpringBootTest;import org.springframework.test.context.DynamicPropertySource;import org.springframework.test.context.DynamicPropertyRegistry;import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;import org.springframework.test.web.servlet.MockMvc;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;import org.springframework.http.MediaType;import com.fasterxml.jackson.databind.ObjectMapper;import org.springframework.security.crypto.password.PasswordEncoder;import java.nio.file.*;
-@SpringBootTest @AutoConfigureMockMvc class FoundationIT {
- @DynamicPropertySource static void properties(DynamicPropertyRegistry r){Containers.properties(r);}
+class FoundationIT extends TestSupport {
  @Autowired Db db;@Autowired MockMvc mvc;@Autowired ObjectMapper json;@Autowired PricingService pricing;@Autowired PasswordEncoder passwords;
  @Test void registrationLoginAndOwnership() throws Exception {
  String email=UUID.randomUUID()+"@test.local";String body=json.writeValueAsString(Map.of("email",email,"password","test-password-123"));
