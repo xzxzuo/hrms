@@ -28,7 +28,7 @@ services:
       RABBITMQ_DEFAULT_USER: hrms
       RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:?set .env}
     ports: ["127.0.0.1:5672:5672", "127.0.0.1:15672:15672"]
-    volumes: ["rabbit-data:/var/lib/rabbitmq"]
+    volumes: ["rabbit-data:/var/lib/rabbitmq", "./ops/rabbit-enabled-plugins:/etc/rabbitmq/enabled_plugins:ro"]
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 5s
@@ -38,6 +38,7 @@ services:
     build: .
     environment:
       SPRING_PROFILES_ACTIVE: demo
+      HRMS_CACHE_ENABLED: ${CACHE_ENABLED:-true}
       DB_URL: jdbc:mysql://mysql:3306/hrms?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true
       DB_USER: hrms
       DB_PASSWORD: ${DB_PASSWORD:?set .env}
@@ -64,10 +65,32 @@ services:
     depends_on:
       app: {condition: service_healthy}
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/v3/api-docs"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/v3/api-docs"]
       interval: 10s
       timeout: 5s
       retries: 10
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    ports: ["127.0.0.1:9090:9090"]
+    volumes: ["./ops/prometheus.yml:/etc/prometheus/prometheus.yml:ro", "./ops/alerts.yml:/etc/prometheus/alerts.yml:ro"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+  grafana:
+    image: grafana/grafana:12.2.0
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?set .env}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+    ports: ["127.0.0.1:3000:3000"]
+    volumes: ["./ops/grafana/provisioning:/etc/grafana/provisioning:ro", "./ops/grafana/dashboards:/var/lib/grafana/dashboards:ro"]
+    depends_on: [prometheus]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
 volumes:
   mysql-data:
   rabbit-data:

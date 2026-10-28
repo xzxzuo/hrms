@@ -28,3 +28,8 @@
 ## Phase 5
 
 2026-10-28 16:10 Europe/Stockholm，`mvn -B verify`：24 tests，0 failures/errors/skipped，45.094s，BUILD SUCCESS。1000个虚拟线程用户争100配额，100个成功订单，3晚各held=100/available=0；这是进程内service并发测试，不是HTTP QPS。另验证真实库存3/配额10只能成功3、失败7补偿，Redis丢失后从MySQL重建remaining=7；成功订单取消回补每日库存但不返还活动额度。同用户4并发一个请求；无效用户FK导致持久化失败后额度恢复；模拟进程崩溃留下Lua预扣租约，30s对账恢复；活动前后拒绝；Redis暂停503且无数据库请求；消费者停后恢复正确处理排队订单。
+
+## Phase 6
+
+2026-10-28 16:13 Europe/Stockholm，`mvn -B verify`：26 tests，0 failures/errors/skipped，57.337s，BUILD SUCCESS。hotel-scoped报表、未授权酒店403、对账识别人为制造的held异常、JWT拒绝、实际OpenAPI输出通过。
+完整Docker Compose首次启动成功：MySQL/Redis/RabbitMQ/app/Nginx/Prometheus/Grafana均通过健康检查；Prometheus的hrms和rabbitmq targets均UP；Nginx实际提供OpenAPI；Grafana health为ok。修复Nginx健康检查localhost解析IPv6而只监听IPv4的问题，改127.0.0.1。

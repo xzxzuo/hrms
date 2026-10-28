@@ -1,8 +1,90 @@
 package com.hrms;
-import com.hrms.messaging.*;import com.hrms.shared.*;import java.util.*;import java.time.*;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.amqp.rabbit.core.RabbitTemplate;import org.junit.jupiter.api.*;import static org.assertj.core.api.Assertions.*;import static org.awaitility.Awaitility.await;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.awaitility.Awaitility.await;
+
+import com.hrms.messaging.*;
+import com.hrms.shared.*;
+import java.time.*;
+import java.util.*;
+import org.junit.jupiter.api.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+
 class MessagingIT extends TestSupport {
- @Autowired Events events;@Autowired MessageProcessor processor;@Autowired OutboxPublisher publisher;@Autowired BrokerSender sender;@Autowired RabbitTemplate rabbit;
- @Test void duplicateConsumerCommitsExactlyOneEffectAndExpiryRechecks(){var f=fixture(1,1);long id=book(f);payments.simulate(id,"mq-pay-"+id,true);String event=UUID.randomUUID().toString();processor.process(event,"PAYMENT_SUCCEEDED",Long.toString(id));processor.process(event,"PAYMENT_SUCCEEDED",Long.toString(id));assertThat(db.count("SELECT COUNT(*) FROM notifications WHERE event_id=?",event)).isEqualTo(1);processor.process(UUID.randomUUID().toString(),"BOOKING_CREATED",Long.toString(id));assertThat(bookings.get(id).get("status")).isEqualTo("CONFIRMED");}
- @Test void confirmedPublishAndBoundedRetryToDeadLetter(){String event=UUID.randomUUID().toString();tx.run(()->{db.exec("INSERT INTO outbox_events(id,event_type,aggregate_id) VALUES(?,'INVALID_POISON','0')",event);return null;});publisher.drain(1000);await().atMost(Duration.ofSeconds(20)).until(()->"SENT".equals(db.one("SELECT status FROM outbox_events WHERE id=?",event).get("status")));await().atMost(Duration.ofSeconds(20)).until(()->{var message=rabbit.receive(BrokerConfig.DEAD);return message!=null&&message.getMessageProperties().getMessageId().equals(event);});assertThat(db.count("SELECT COUNT(*) FROM processed_messages WHERE message_id=?",event)).isZero();}
- @Test void brokerOutageRetainsOutboxThenRecovers(){var f=fixture(1,1);long id=book(f);String event=tx.run(()->events.add("PAYMENT_SUCCEEDED",id));db.exec("UPDATE outbox_events SET next_attempt=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 DAY) WHERE id=?",event);var docker=Containers.RABBIT.getDockerClient();docker.pauseContainerCmd(Containers.RABBIT.getContainerId()).exec();try{publisher.drain(1);assertThat(db.count("SELECT COUNT(*) FROM outbox_events WHERE id=? AND status='NEW' AND attempts=1",event)).isEqualTo(1);}finally{docker.unpauseContainerCmd(Containers.RABBIT.getContainerId()).exec();}db.exec("UPDATE outbox_events SET next_attempt=UTC_TIMESTAMP(6) WHERE status='NEW'");publisher.drain(1000);await().atMost(Duration.ofSeconds(15)).until(()->db.count("SELECT COUNT(*) FROM notifications WHERE event_id=?",event)==1);}
+  @Autowired Events events;
+  @Autowired MessageProcessor processor;
+  @Autowired OutboxPublisher publisher;
+  @Autowired BrokerSender sender;
+  @Autowired RabbitTemplate rabbit;
+
+  @Test
+  void duplicateConsumerCommitsExactlyOneEffectAndExpiryRechecks() {
+    var f = fixture(1, 1);
+    long id = book(f);
+    payments.simulate(id, "mq-pay-" + id, true);
+    String event = UUID.randomUUID().toString();
+    processor.process(event, "PAYMENT_SUCCEEDED", Long.toString(id));
+    processor.process(event, "PAYMENT_SUCCEEDED", Long.toString(id));
+    assertThat(db.count("SELECT COUNT(*) FROM notifications WHERE event_id=?", event)).isEqualTo(1);
+    processor.process(UUID.randomUUID().toString(), "BOOKING_CREATED", Long.toString(id));
+    assertThat(bookings.get(id).get("status")).isEqualTo("CONFIRMED");
+  }
+
+  @Test
+  void confirmedPublishAndBoundedRetryToDeadLetter() {
+    String event = UUID.randomUUID().toString();
+    tx.run(
+        () -> {
+          db.exec(
+              "INSERT INTO outbox_events(id,event_type,aggregate_id) VALUES(?,'INVALID_POISON','0')",
+              event);
+          return null;
+        });
+    publisher.drain(1000);
+    await()
+        .atMost(Duration.ofSeconds(20))
+        .until(
+            () ->
+                "SENT"
+                    .equals(
+                        db.one("SELECT status FROM outbox_events WHERE id=?", event)
+                            .get("status")));
+    await()
+        .atMost(Duration.ofSeconds(20))
+        .until(
+            () -> {
+              var message = rabbit.receive(BrokerConfig.DEAD);
+              return message != null && message.getMessageProperties().getMessageId().equals(event);
+            });
+    assertThat(db.count("SELECT COUNT(*) FROM processed_messages WHERE message_id=?", event))
+        .isZero();
+  }
+
+  @Test
+  void brokerOutageRetainsOutboxThenRecovers() {
+    var f = fixture(1, 1);
+    long id = book(f);
+    String event = tx.run(() -> events.add("PAYMENT_SUCCEEDED", id));
+    db.exec(
+        "UPDATE outbox_events SET next_attempt=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 DAY) WHERE id=?",
+        event);
+    var docker = Containers.RABBIT.getDockerClient();
+    docker.pauseContainerCmd(Containers.RABBIT.getContainerId()).exec();
+    try {
+      publisher.drain(1);
+      assertThat(
+              db.count(
+                  "SELECT COUNT(*) FROM outbox_events WHERE id=? AND status='NEW' AND attempts=1",
+                  event))
+          .isEqualTo(1);
+    } finally {
+      docker.unpauseContainerCmd(Containers.RABBIT.getContainerId()).exec();
+    }
+    db.exec("UPDATE outbox_events SET next_attempt=UTC_TIMESTAMP(6) WHERE status='NEW'");
+    publisher.drain(1000);
+    await()
+        .atMost(Duration.ofSeconds(15))
+        .until(() -> db.count("SELECT COUNT(*) FROM notifications WHERE event_id=?", event) == 1);
+  }
 }

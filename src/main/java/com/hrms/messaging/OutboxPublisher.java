@@ -1,8 +1,78 @@
 package com.hrms.messaging;
-import com.hrms.shared.*;import org.springframework.stereotype.Service;import org.springframework.scheduling.annotation.Scheduled;import org.springframework.beans.factory.annotation.Value;import io.micrometer.core.instrument.MeterRegistry;
-@Service public class OutboxPublisher {
- private final Db db;private final Tx tx;private final BrokerSender sender;private final MeterRegistry metrics;private final boolean jobs;
- public OutboxPublisher(Db db,Tx tx,BrokerSender sender,MeterRegistry metrics,@Value("${hrms.jobs-enabled:true}") boolean jobs){this.db=db;this.tx=tx;this.sender=sender;this.metrics=metrics;this.jobs=jobs;}
- @Scheduled(fixedDelay=1000) public void scheduled(){if(jobs)drain(20);}
- public int drain(int max){int sent=0;for(int i=0;i<max;i++){Boolean next=tx.run(()->{var e=db.one("SELECT * FROM outbox_events WHERE status='NEW' AND next_attempt<=UTC_TIMESTAMP(6) ORDER BY next_attempt,id LIMIT 1 FOR UPDATE SKIP LOCKED");if(e==null)return null;String id=(String)e.get("id");int attempts=Db.number(e,"attempts")+1;try{String type=(String)e.get("event_type");sender.send(type.equals("BOOKING_CREATED")?"expiry":"work",sender.event(id,type,(String)e.get("aggregate_id")));db.exec("UPDATE outbox_events SET status='SENT',sent_at=UTC_TIMESTAMP(6),attempts=? WHERE id=?",attempts,id);metrics.counter("hrms.outbox.published").increment();return true;}catch(Exception ex){boolean dead=attempts>=8;db.exec("UPDATE outbox_events SET status=?,attempts=?,next_attempt=DATE_ADD(UTC_TIMESTAMP(6),INTERVAL ? SECOND) WHERE id=?",dead?"DEAD":"NEW",attempts,Math.min(60,1<<attempts),id);metrics.counter(dead?"hrms.outbox.dead":"hrms.outbox.retries").increment();if(dead)org.slf4j.LoggerFactory.getLogger(getClass()).error("Outbox exhausted eventId={}",id);return false;}});if(next==null)break;if(next)sent++;}return sent;}
+
+import com.hrms.shared.*;
+import io.micrometer.core.instrument.MeterRegistry;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+@Service
+public class OutboxPublisher {
+  private final Db db;
+  private final Tx tx;
+  private final BrokerSender sender;
+  private final MeterRegistry metrics;
+  private final boolean jobs;
+
+  public OutboxPublisher(
+      Db db,
+      Tx tx,
+      BrokerSender sender,
+      MeterRegistry metrics,
+      @Value("${hrms.jobs-enabled:true}") boolean jobs) {
+    this.db = db;
+    this.tx = tx;
+    this.sender = sender;
+    this.metrics = metrics;
+    this.jobs = jobs;
+  }
+
+  @Scheduled(fixedDelay = 1000)
+  public void scheduled() {
+    if (jobs) drain(20);
+  }
+
+  public int drain(int max) {
+    int sent = 0;
+    for (int i = 0; i < max; i++) {
+      Boolean next =
+          tx.run(
+              () -> {
+                var e =
+                    db.one(
+                        "SELECT * FROM outbox_events WHERE status='NEW' AND next_attempt<=UTC_TIMESTAMP(6) ORDER BY next_attempt,id LIMIT 1 FOR UPDATE SKIP LOCKED");
+                if (e == null) return null;
+                String id = (String) e.get("id");
+                int attempts = Db.number(e, "attempts") + 1;
+                try {
+                  String type = (String) e.get("event_type");
+                  sender.send(
+                      type.equals("BOOKING_CREATED") ? "expiry" : "work",
+                      sender.event(id, type, (String) e.get("aggregate_id")));
+                  db.exec(
+                      "UPDATE outbox_events SET status='SENT',sent_at=UTC_TIMESTAMP(6),attempts=? WHERE id=?",
+                      attempts,
+                      id);
+                  metrics.counter("hrms.outbox.published").increment();
+                  return true;
+                } catch (Exception ex) {
+                  boolean dead = attempts >= 8;
+                  db.exec(
+                      "UPDATE outbox_events SET status=?,attempts=?,next_attempt=DATE_ADD(UTC_TIMESTAMP(6),INTERVAL ? SECOND) WHERE id=?",
+                      dead ? "DEAD" : "NEW",
+                      attempts,
+                      Math.min(60, 1 << attempts),
+                      id);
+                  metrics.counter(dead ? "hrms.outbox.dead" : "hrms.outbox.retries").increment();
+                  if (dead)
+                    org.slf4j.LoggerFactory.getLogger(getClass())
+                        .error("Outbox exhausted eventId={}", id);
+                  return false;
+                }
+              });
+      if (next == null) break;
+      if (next) sent++;
+    }
+    return sent;
+  }
 }

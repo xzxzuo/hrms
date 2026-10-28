@@ -1,0 +1,22 @@
+groups:
+  - name: hrms
+    rules:
+      - alert: InventoryMismatch
+        expr: hrms_inventory_mismatches > 0
+        for: 1m
+        labels: {severity: critical}
+        annotations: {summary: "Inventory reconciliation mismatch"}
+      - alert: DeadMessages
+        expr: increase(hrms_messages_dead_total[5m]) > 0
+        labels: {severity: warning}
+        annotations: {summary: "Messages exhausted retries"}
+      - alert: OutboxBacklog
+        expr: hrms_outbox_backlog > 100
+        for: 2m
+        labels: {severity: warning}
+        annotations: {summary: "Outbox backlog requires investigation"}
+      - alert: ApiFailureRate
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) / clamp_min(sum(rate(http_server_requests_seconds_count[5m])), 1) > 0.05
+        for: 1m
+        labels: {severity: warning}
+        annotations: {summary: "API 5xx rate over 5 percent"}

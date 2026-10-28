@@ -1,16 +1,283 @@
 package com.hrms;
-import com.hrms.shared.*;import com.hrms.promotion.CouponService;import org.junit.jupiter.api.*;import static org.assertj.core.api.Assertions.*;import java.util.*;import java.time.*;import java.math.BigDecimal;import java.util.concurrent.*;import java.util.concurrent.atomic.*;import org.springframework.beans.factory.annotation.Autowired;
+
+import static org.assertj.core.api.Assertions.*;
+
+import com.hrms.promotion.CouponService;
+import com.hrms.shared.*;
+import java.math.BigDecimal;
+import java.time.*;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+
 class TransactionIT extends TestSupport {
- @Autowired CouponService coupons;
- @Test void lastRoomAndOverlappingNights()throws Exception {var f=fixture(1,3);var users=new ArrayList<Long>();var quotes=new ArrayList<String>();for(int i=0;i<20;i++){long user=user();users.add(user);quotes.add(quote(f,user));}var results=concurrent(20,i->{try{return Db.id(bookings.create(users.get(i),"last-room",quotes.get(i),null),"id");}catch(Problem e){assertThat(e.code).isEqualTo("INVENTORY_UNAVAILABLE");return 0L;}});assertThat(results.stream().filter(id->id>0).count()).isEqualTo(1);assertThat(db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(3);invariant(f);}
- @Test void partialDateFailureRollsBackWholeOrder(){var f=fixture(1,3);db.exec("UPDATE room_daily_inventory SET available=0,blocked=1 WHERE room_type_id=? AND stay_date=?",f.room(),f.in().plusDays(1));String quote=quote(f,f.user());assertThatThrownBy(()->bookings.create(f.user(),"partial",quote,null)).isInstanceOf(Problem.class);assertThat(db.count("SELECT COUNT(*) FROM bookings WHERE room_type_id=?",f.room())).isZero();assertThat(db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isZero();assertThat(db.count("SELECT COUNT(*) FROM inventory_ledger WHERE room_type_id=?",f.room())).isZero();invariant(f);}
- @Test void concurrentStableIdempotencyAndPayloadConflict()throws Exception {var f=fixture(10,2);String quote=quote(f,f.user());var ids=concurrent(20,i->Db.id(bookings.create(f.user(),"stable-key",quote,null),"id"));assertThat(new HashSet<>(ids)).hasSize(1);assertThat(db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(2);String other=quote(f,f.user());assertThatThrownBy(()->bookings.create(f.user(),"stable-key",other,null)).isInstanceOf(Problem.class).hasMessage("IDEMPOTENCY_CONFLICT");}
- @Test void paymentDuplicateCallbackAndCancellation(){var f=fixture(1,2);long id=book(f);assertThat(payments.simulate(id,"pay-"+id,true).get("status")).isEqualTo("CONFIRMED");payments.simulate(id,"pay-"+id,true);assertThat(db.count("SELECT SUM(sold) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(2);bookings.cancel(id);bookings.cancel(id);assertThat(db.count("SELECT SUM(available) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(2);assertThat(db.count("SELECT COUNT(*) FROM refunds WHERE booking_id=?",id)).isEqualTo(1);long refund=Db.id(db.one("SELECT id FROM refunds WHERE booking_id=?",id),"id");payments.complete(refund);payments.complete(refund);assertThat(db.one("SELECT status FROM refunds WHERE id=?",refund).get("status")).isEqualTo("COMPLETED");invariant(f);}
- @Test void paymentTimeoutAndUserCancelCompete()throws Exception {for(int run=0;run<12;run++){var f=fixture(1,2);long id=book(f);db.exec("UPDATE bookings SET expires_at=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 SECOND) WHERE id=?",id);concurrent(3,i->{if(i==0)payments.simulate(id,"race-"+id,true);else if(i==1)bookings.expire(id);else bookings.cancel(id);return true;});var b=bookings.get(id);assertThat(b.get("status")).isIn("CANCELLED","EXPIRED");assertThat(db.count("SELECT SUM(available) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(2);assertThat(db.count("SELECT SUM(held+sold) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isZero();assertThat(db.count("SELECT COUNT(*) FROM refunds WHERE booking_id=?",id)).isEqualTo(1);invariant(f);}}
- @Test void earlyPaymentWinsAndScannerCannotRelease(){var f=fixture(1,1);long id=book(f);payments.simulate(id,"paid-"+id,true);db.exec("UPDATE bookings SET expires_at=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 SECOND) WHERE id=?",id);bookings.expire(id);assertThat(bookings.get(id).get("status")).isEqualTo("CONFIRMED");assertThat(db.count("SELECT sold FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(1);}
- @Test void signaturesFailuresAndCouponLifecycle(){var f=fixture(2,1);long coupon=db.insert("INSERT INTO coupons(hotel_id,name,discount,min_total,expires_at,quota) VALUES(?,'Test',100,200,DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 1 DAY),1)",f.hotel());long uc=Db.id(coupons.claim(f.user(),coupon),"id");assertThat(Db.id(coupons.claim(f.user(),coupon),"id")).isEqualTo(uc);long id=Db.id(bookings.create(f.user(),"with-coupon",quote(f,f.user()),uc),"id");assertThat(Db.money(bookings.get(id),"total")).isEqualByComparingTo("400.00");assertThatThrownBy(()->payments.callback(id,"bad",new BigDecimal("400.00"),true,Instant.now().getEpochSecond(),"invalid")).hasMessage("CALLBACK_SIGNATURE_INVALID");payments.simulate(id,"failed-"+id,false);assertThat(bookings.get(id).get("status")).isEqualTo("PENDING_PAYMENT");bookings.cancel(id);assertThat(db.one("SELECT status FROM user_coupons WHERE id=?",uc).get("status")).isEqualTo("AVAILABLE");}
- @Test void realMysqlDeadlockRetriesWholeTransaction()throws Exception {var f=fixture(2,2);var barrier=new CountDownLatch(2);var attempts=new AtomicInteger();var first=new AtomicBoolean(true);var second=new AtomicBoolean(true);concurrent(2,i->{tx.run(()->{attempts.incrementAndGet();var a=f.in().plusDays(i);var b=f.in().plusDays(1-i);db.exec("UPDATE room_daily_rate SET price=price+1 WHERE room_type_id=? AND stay_date=?",f.room(),a);if((i==0?first:second).getAndSet(false)){barrier.countDown();try{if(!barrier.await(5,TimeUnit.SECONDS))throw new AssertionError("barrier");}catch(InterruptedException e){throw new RuntimeException(e);}}db.exec("UPDATE room_daily_rate SET price=price+1 WHERE room_type_id=? AND stay_date=?",f.room(),b);return null;});return true;});assertThat(attempts.get()).isGreaterThan(2);assertThat(db.list("SELECT price FROM room_daily_rate WHERE room_type_id=?",f.room())).allSatisfy(r->assertThat(Db.money(r,"price")).isEqualByComparingTo("502.00"));}
- @Test void sameCouponConcurrentReplay()throws Exception {var f=fixture(5,1);long coupon=db.insert("INSERT INTO coupons(hotel_id,name,discount,min_total,expires_at,quota) VALUES(?,'Repeat',50,0,DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 1 DAY),1)",f.hotel());long uc=Db.id(coupons.claim(f.user(),coupon),"id");String q=quote(f,f.user());var ids=concurrent(10,i->Db.id(bookings.create(f.user(),"coupon-repeat",q,uc),"id"));assertThat(new HashSet<>(ids)).hasSize(1);}
- @Test void partiallyOverlappingRanges()throws Exception {var f=fixture(1,3);long u=user();String q1=(String)pricing.quote(f.user(),f.room(),f.in(),f.in().plusDays(2),1).get("quoteId");String q2=(String)pricing.quote(u,f.room(),f.in().plusDays(1),f.in().plusDays(3),1).get("quoteId");var result=concurrent(2,i->{try{bookings.create(i==0?f.user():u,"overlap",i==0?q1:q2,null);return true;}catch(Problem e){assertThat(e.code).isEqualTo("INVENTORY_UNAVAILABLE");return false;}});assertThat(result.stream().filter(Boolean::booleanValue).count()).isEqualTo(1);assertThat(db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(2);invariant(f);}
- @Test void checkinCheckoutUsesPhysicalRoomWithoutReleasingHistoricalSold(){var f=fixture(1,1);var today=LocalDate.now(ZoneOffset.UTC);db.exec("UPDATE room_daily_inventory SET stay_date=? WHERE room_type_id=?",today,f.room());db.exec("UPDATE room_daily_rate SET stay_date=? WHERE room_type_id=?",today,f.room());long room=db.insert("INSERT INTO physical_rooms(room_type_id,room_no) VALUES(?,'101')",f.room());String q=(String)pricing.quote(f.user(),f.room(),today,today.plusDays(1),1).get("quoteId");long id=Db.id(bookings.create(f.user(),"checkin",q,null),"id");payments.simulate(id,"in-"+id,true);bookings.checkIn(id);bookings.checkIn(id);assertThat(db.one("SELECT status FROM physical_rooms WHERE id=?",room).get("status")).isEqualTo("OCCUPIED");bookings.checkOut(id);bookings.checkOut(id);assertThat(db.one("SELECT status FROM physical_rooms WHERE id=?",room).get("status")).isEqualTo("CLEANING");assertThat(db.count("SELECT sold FROM room_daily_inventory WHERE room_type_id=?",f.room())).isEqualTo(1);assertThatThrownBy(()->bookings.cancel(id)).hasMessage("INVALID_STATE");}
+  @Autowired CouponService coupons;
+
+  @Test
+  void lastRoomAndOverlappingNights() throws Exception {
+    var f = fixture(1, 3);
+    var users = new ArrayList<Long>();
+    var quotes = new ArrayList<String>();
+    for (int i = 0; i < 20; i++) {
+      long user = user();
+      users.add(user);
+      quotes.add(quote(f, user));
+    }
+    var results =
+        concurrent(
+            20,
+            i -> {
+              try {
+                return Db.id(bookings.create(users.get(i), "last-room", quotes.get(i), null), "id");
+              } catch (Problem e) {
+                assertThat(e.code).isEqualTo("INVENTORY_UNAVAILABLE");
+                return 0L;
+              }
+            });
+    assertThat(results.stream().filter(id -> id > 0).count()).isEqualTo(1);
+    assertThat(
+            db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(3);
+    invariant(f);
+  }
+
+  @Test
+  void partialDateFailureRollsBackWholeOrder() {
+    var f = fixture(1, 3);
+    db.exec(
+        "UPDATE room_daily_inventory SET available=0,blocked=1 WHERE room_type_id=? AND stay_date=?",
+        f.room(),
+        f.in().plusDays(1));
+    String quote = quote(f, f.user());
+    assertThatThrownBy(() -> bookings.create(f.user(), "partial", quote, null))
+        .isInstanceOf(Problem.class);
+    assertThat(db.count("SELECT COUNT(*) FROM bookings WHERE room_type_id=?", f.room())).isZero();
+    assertThat(
+            db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isZero();
+    assertThat(db.count("SELECT COUNT(*) FROM inventory_ledger WHERE room_type_id=?", f.room()))
+        .isZero();
+    invariant(f);
+  }
+
+  @Test
+  void concurrentStableIdempotencyAndPayloadConflict() throws Exception {
+    var f = fixture(10, 2);
+    String quote = quote(f, f.user());
+    var ids =
+        concurrent(20, i -> Db.id(bookings.create(f.user(), "stable-key", quote, null), "id"));
+    assertThat(new HashSet<>(ids)).hasSize(1);
+    assertThat(
+            db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(2);
+    String other = quote(f, f.user());
+    assertThatThrownBy(() -> bookings.create(f.user(), "stable-key", other, null))
+        .isInstanceOf(Problem.class)
+        .hasMessage("IDEMPOTENCY_CONFLICT");
+  }
+
+  @Test
+  void paymentDuplicateCallbackAndCancellation() {
+    var f = fixture(1, 2);
+    long id = book(f);
+    assertThat(payments.simulate(id, "pay-" + id, true).get("status")).isEqualTo("CONFIRMED");
+    payments.simulate(id, "pay-" + id, true);
+    assertThat(
+            db.count("SELECT SUM(sold) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(2);
+    bookings.cancel(id);
+    bookings.cancel(id);
+    assertThat(
+            db.count(
+                "SELECT SUM(available) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(2);
+    assertThat(db.count("SELECT COUNT(*) FROM refunds WHERE booking_id=?", id)).isEqualTo(1);
+    long refund = Db.id(db.one("SELECT id FROM refunds WHERE booking_id=?", id), "id");
+    payments.complete(refund);
+    payments.complete(refund);
+    assertThat(db.one("SELECT status FROM refunds WHERE id=?", refund).get("status"))
+        .isEqualTo("COMPLETED");
+    invariant(f);
+  }
+
+  @Test
+  void paymentTimeoutAndUserCancelCompete() throws Exception {
+    for (int run = 0; run < 12; run++) {
+      var f = fixture(1, 2);
+      long id = book(f);
+      db.exec(
+          "UPDATE bookings SET expires_at=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 SECOND) WHERE id=?",
+          id);
+      concurrent(
+          3,
+          i -> {
+            if (i == 0) payments.simulate(id, "race-" + id, true);
+            else if (i == 1) bookings.expire(id);
+            else bookings.cancel(id);
+            return true;
+          });
+      var b = bookings.get(id);
+      assertThat(b.get("status")).isIn("CANCELLED", "EXPIRED");
+      assertThat(
+              db.count(
+                  "SELECT SUM(available) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+          .isEqualTo(2);
+      assertThat(
+              db.count(
+                  "SELECT SUM(held+sold) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+          .isZero();
+      assertThat(db.count("SELECT COUNT(*) FROM refunds WHERE booking_id=?", id)).isEqualTo(1);
+      invariant(f);
+    }
+  }
+
+  @Test
+  void earlyPaymentWinsAndScannerCannotRelease() {
+    var f = fixture(1, 1);
+    long id = book(f);
+    payments.simulate(id, "paid-" + id, true);
+    db.exec(
+        "UPDATE bookings SET expires_at=DATE_SUB(UTC_TIMESTAMP(6),INTERVAL 1 SECOND) WHERE id=?",
+        id);
+    bookings.expire(id);
+    assertThat(bookings.get(id).get("status")).isEqualTo("CONFIRMED");
+    assertThat(db.count("SELECT sold FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(1);
+  }
+
+  @Test
+  void signaturesFailuresAndCouponLifecycle() {
+    var f = fixture(2, 1);
+    long coupon =
+        db.insert(
+            "INSERT INTO coupons(hotel_id,name,discount,min_total,expires_at,quota) VALUES(?,'Test',100,200,DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 1 DAY),1)",
+            f.hotel());
+    long uc = Db.id(coupons.claim(f.user(), coupon), "id");
+    assertThat(Db.id(coupons.claim(f.user(), coupon), "id")).isEqualTo(uc);
+    long id = Db.id(bookings.create(f.user(), "with-coupon", quote(f, f.user()), uc), "id");
+    assertThat(Db.money(bookings.get(id), "total")).isEqualByComparingTo("400.00");
+    assertThatThrownBy(
+            () ->
+                payments.callback(
+                    id,
+                    "bad",
+                    new BigDecimal("400.00"),
+                    true,
+                    Instant.now().getEpochSecond(),
+                    "invalid"))
+        .hasMessage("CALLBACK_SIGNATURE_INVALID");
+    payments.simulate(id, "failed-" + id, false);
+    assertThat(bookings.get(id).get("status")).isEqualTo("PENDING_PAYMENT");
+    bookings.cancel(id);
+    assertThat(db.one("SELECT status FROM user_coupons WHERE id=?", uc).get("status"))
+        .isEqualTo("AVAILABLE");
+  }
+
+  @Test
+  void realMysqlDeadlockRetriesWholeTransaction() throws Exception {
+    var f = fixture(2, 2);
+    var barrier = new CountDownLatch(2);
+    var attempts = new AtomicInteger();
+    var first = new AtomicBoolean(true);
+    var second = new AtomicBoolean(true);
+    concurrent(
+        2,
+        i -> {
+          tx.run(
+              () -> {
+                attempts.incrementAndGet();
+                var a = f.in().plusDays(i);
+                var b = f.in().plusDays(1 - i);
+                db.exec(
+                    "UPDATE room_daily_rate SET price=price+1 WHERE room_type_id=? AND stay_date=?",
+                    f.room(),
+                    a);
+                if ((i == 0 ? first : second).getAndSet(false)) {
+                  barrier.countDown();
+                  try {
+                    if (!barrier.await(5, TimeUnit.SECONDS)) throw new AssertionError("barrier");
+                  } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                  }
+                }
+                db.exec(
+                    "UPDATE room_daily_rate SET price=price+1 WHERE room_type_id=? AND stay_date=?",
+                    f.room(),
+                    b);
+                return null;
+              });
+          return true;
+        });
+    assertThat(attempts.get()).isGreaterThan(2);
+    assertThat(db.list("SELECT price FROM room_daily_rate WHERE room_type_id=?", f.room()))
+        .allSatisfy(r -> assertThat(Db.money(r, "price")).isEqualByComparingTo("502.00"));
+  }
+
+  @Test
+  void sameCouponConcurrentReplay() throws Exception {
+    var f = fixture(5, 1);
+    long coupon =
+        db.insert(
+            "INSERT INTO coupons(hotel_id,name,discount,min_total,expires_at,quota) VALUES(?,'Repeat',50,0,DATE_ADD(UTC_TIMESTAMP(6),INTERVAL 1 DAY),1)",
+            f.hotel());
+    long uc = Db.id(coupons.claim(f.user(), coupon), "id");
+    String q = quote(f, f.user());
+    var ids = concurrent(10, i -> Db.id(bookings.create(f.user(), "coupon-repeat", q, uc), "id"));
+    assertThat(new HashSet<>(ids)).hasSize(1);
+  }
+
+  @Test
+  void partiallyOverlappingRanges() throws Exception {
+    var f = fixture(1, 3);
+    long u = user();
+    String q1 =
+        (String) pricing.quote(f.user(), f.room(), f.in(), f.in().plusDays(2), 1).get("quoteId");
+    String q2 =
+        (String)
+            pricing.quote(u, f.room(), f.in().plusDays(1), f.in().plusDays(3), 1).get("quoteId");
+    var result =
+        concurrent(
+            2,
+            i -> {
+              try {
+                bookings.create(i == 0 ? f.user() : u, "overlap", i == 0 ? q1 : q2, null);
+                return true;
+              } catch (Problem e) {
+                assertThat(e.code).isEqualTo("INVENTORY_UNAVAILABLE");
+                return false;
+              }
+            });
+    assertThat(result.stream().filter(Boolean::booleanValue).count()).isEqualTo(1);
+    assertThat(
+            db.count("SELECT SUM(held) FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(2);
+    invariant(f);
+  }
+
+  @Test
+  void checkinCheckoutUsesPhysicalRoomWithoutReleasingHistoricalSold() {
+    var f = fixture(1, 1);
+    var today = LocalDate.now(ZoneOffset.UTC);
+    db.exec("UPDATE room_daily_inventory SET stay_date=? WHERE room_type_id=?", today, f.room());
+    db.exec("UPDATE room_daily_rate SET stay_date=? WHERE room_type_id=?", today, f.room());
+    long room =
+        db.insert("INSERT INTO physical_rooms(room_type_id,room_no) VALUES(?,'101')", f.room());
+    String q =
+        (String) pricing.quote(f.user(), f.room(), today, today.plusDays(1), 1).get("quoteId");
+    long id = Db.id(bookings.create(f.user(), "checkin", q, null), "id");
+    payments.simulate(id, "in-" + id, true);
+    bookings.checkIn(id);
+    bookings.checkIn(id);
+    assertThat(db.one("SELECT status FROM physical_rooms WHERE id=?", room).get("status"))
+        .isEqualTo("OCCUPIED");
+    bookings.checkOut(id);
+    bookings.checkOut(id);
+    assertThat(db.one("SELECT status FROM physical_rooms WHERE id=?", room).get("status"))
+        .isEqualTo("CLEANING");
+    assertThat(db.count("SELECT sold FROM room_daily_inventory WHERE room_type_id=?", f.room()))
+        .isEqualTo(1);
+    assertThatThrownBy(() -> bookings.cancel(id)).hasMessage("INVALID_STATE");
+  }
 }

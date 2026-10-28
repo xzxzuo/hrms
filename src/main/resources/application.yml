@@ -42,6 +42,12 @@ server:
       max: 100
     accept-count: 100
 management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.95,0.99
   server:
     port: ${MANAGEMENT_PORT:8081}
   endpoints:
