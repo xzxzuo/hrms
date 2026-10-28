@@ -1,0 +1,12 @@
+# 实际验证记录
+
+环境：2026-10-28，macOS arm64，Java 21.0.8，Docker Desktop 27.4.0；Maven 3.9.x；Testcontainers 1.21.3；真实 mysql:8.4.7 / redis:7.4.6-alpine / rabbitmq:3.13.7-management-alpine。
+
+## Phase 0–1
+
+- 六项设计文档、DDL、ER、ADR、API 清单已写入。
+- 命令：`JAVA_HOME=<Java21> mvn -B verify`。
+- 2026-10-28 15:57 Europe/Stockholm：BUILD SUCCESS，FoundationIT 2 tests，0 failures，0 errors，0 skipped；构建总耗时56.234s（包括首次镜像拉取）。
+- 已验证：Flyway迁移、MySQL CHECK约束、注册/登录JWT、USER拒绝管理端、未授权酒店拒绝、三晚报价金额与离店日排除、日期非法拒绝。
+- 修复记录：演示字符串转义、JWT权限泛型类型、测试JSON转义编译错误。修复后完整构建通过。
+- 后续阶段尚未验收；没有实测QPS/p95/p99数据。
