@@ -1,0 +1,457 @@
+[
+  {
+    "epochMs": 1793201333410,
+    "containers": [
+      {
+        "CPUPerc": "521.26%",
+        "MemPerc": "6.61%",
+        "MemUsage": "524.3MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "7.96%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.4MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.54%",
+        "MemPerc": "1.78%",
+        "MemUsage": "141MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 6.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 140466,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201337305,
+    "containers": [
+      {
+        "CPUPerc": "473.50%",
+        "MemPerc": "6.60%",
+        "MemUsage": "523.7MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.78%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.5MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "1.58%",
+        "MemPerc": "1.97%",
+        "MemUsage": "156.5MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 6.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 141487,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201341129,
+    "containers": [
+      {
+        "CPUPerc": "498.23%",
+        "MemPerc": "6.61%",
+        "MemUsage": "524.4MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "7.48%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.5MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "2.27%",
+        "MemPerc": "1.81%",
+        "MemUsage": "143.6MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 6.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 142512,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201344924,
+    "containers": [
+      {
+        "CPUPerc": "495.11%",
+        "MemPerc": "6.61%",
+        "MemUsage": "525MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.08%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.6MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.34%",
+        "MemPerc": "1.80%",
+        "MemUsage": "142.7MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 143301,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201347967,
+    "containers": [
+      {
+        "CPUPerc": "505.41%",
+        "MemPerc": "6.62%",
+        "MemUsage": "525.7MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "9.27%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.5MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.18%",
+        "MemPerc": "1.79%",
+        "MemUsage": "142.3MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 144275,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201351789,
+    "containers": [
+      {
+        "CPUPerc": "495.20%",
+        "MemPerc": "6.63%",
+        "MemUsage": "526.3MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.93%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.5MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.22%",
+        "MemPerc": "1.81%",
+        "MemUsage": "143.4MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 6.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 145285,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201355575,
+    "containers": [
+      {
+        "CPUPerc": "479.18%",
+        "MemPerc": "6.64%",
+        "MemUsage": "526.7MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.48%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.5MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "123.61%",
+        "MemPerc": "2.69%",
+        "MemUsage": "213.4MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 146095,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201358601,
+    "containers": [
+      {
+        "CPUPerc": "487.23%",
+        "MemPerc": "6.64%",
+        "MemUsage": "527MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.35%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.8MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.29%",
+        "MemPerc": "1.80%",
+        "MemUsage": "143MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 6.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 0.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 147129,
+      "Threads_connected": 21,
+      "Threads_running": 3
+    }
+  },
+  {
+    "epochMs": 1793201362361,
+    "containers": [
+      {
+        "CPUPerc": "481.25%",
+        "MemPerc": "6.65%",
+        "MemUsage": "528MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.31%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.6MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.16%",
+        "MemPerc": "1.81%",
+        "MemUsage": "143.3MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 0.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 148082,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201366146,
+    "containers": [
+      {
+        "CPUPerc": "501.78%",
+        "MemPerc": "6.65%",
+        "MemUsage": "528.2MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.35%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.9MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.62%",
+        "MemPerc": "1.83%",
+        "MemUsage": "145.1MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 6.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 0.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 148909,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201369195,
+    "containers": [
+      {
+        "CPUPerc": "522.14%",
+        "MemPerc": "6.20%",
+        "MemUsage": "492.4MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "6.18%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.9MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.15%",
+        "MemPerc": "1.81%",
+        "MemUsage": "143.7MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 2.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 0.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 149914,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201372973,
+    "containers": [
+      {
+        "CPUPerc": "455.01%",
+        "MemPerc": "6.91%",
+        "MemUsage": "548.5MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "20.93%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.7MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "64.56%",
+        "MemPerc": "1.79%",
+        "MemUsage": "142.4MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 0.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 93519,
+      "Innodb_row_lock_waits": 815,
+      "Questions": 155042,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  },
+  {
+    "epochMs": 1793201376764,
+    "containers": [
+      {
+        "CPUPerc": "20.27%",
+        "MemPerc": "6.85%",
+        "MemUsage": "544MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "5.24%",
+        "MemPerc": "7.05%",
+        "MemUsage": "559.8MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "0.82%",
+        "MemPerc": "1.80%",
+        "MemUsage": "142.5MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 100.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 94234,
+      "Innodb_row_lock_waits": 872,
+      "Questions": 157755,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  }
+]

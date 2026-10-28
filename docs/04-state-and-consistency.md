@@ -28,3 +28,5 @@ Outbox 行锁 SKIP LOCKED + confirm/returns 只确认 broker 接收，不确认�
 
 ## 对账
 聚合 booking_nights 对比 held/sold（按订单状态），验证 total=available+held+sold+blocked；聚合成功秒杀数<=quota。异常只告警，修复需审计及人工确认，不能直接覆盖尚在事务中的库存。
+
+实现补充：持久化准入时另锁活动行并校验QUEUED/SUCCESS总数<=quota；冷活动创建后预热，重建等待者观察ready而非全部排写锁。目录缓存采用catalog epoch进行命名空间失效；热门酒店统计允许2分钟TTL窗口。

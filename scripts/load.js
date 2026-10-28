@@ -2,14 +2,16 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Trend, Rate, Counter } from 'k6/metrics';
 const mode=__ENV.MODE||'cached';
-const base=__ENV.BASE_URL||'http://host.docker.internal:8080';
+const base=__ENV.BASE_URL||'http://app:8080';
 const latency=new Trend('measured_latency',true);
+const begins=new Trend('measurement_begin_epoch_ms');
+const ends=new Trend('measurement_end_epoch_ms');
 const unexpected=new Rate('unexpected_failure');
 const accepted=new Counter('accepted');
 const rejected=new Counter('expected_rejection');
 const scenario=mode==='seckill'?{executor:'per-vu-iterations',vus:1000,iterations:1,maxDuration:'120s'}:mode==='booking'?{executor:'per-vu-iterations',vus:20,iterations:5,maxDuration:'120s'}:mode==='rate'?{executor:'shared-iterations',vus:1,iterations:1,maxDuration:'30s'}:{executor:'constant-vus',vus:20,duration:'10s'};
 export const options={scenarios:{measured:scenario},setupTimeout:'10m',summaryTrendStats:['avg','min','med','max','p(95)','p(99)'],thresholds:{unexpected_failure:['rate==0']}};
-function headers(token){return {'Content-Type':'application/json',Authorization:`Bearer ${token}`};}
+function headers(token){const h={'Content-Type':'application/json'};if(token)h.Authorization=`Bearer ${token}`;return h;}
 function post(path,body,token){return http.post(base+path,JSON.stringify(body),{headers:headers(token)});}
 function checked(response){if(response.status!==200)throw new Error(`${response.url}: ${response.status} ${response.body}`);return response.json();}
 function date(offset){return new Date(Date.now()+offset*86400000).toISOString().slice(0,10);}
@@ -37,8 +39,9 @@ export function setup(){
  for(let i=0;i<n;i++)campaigns.push(checked(post(`/api/admin/hotels/${hotel}/campaigns`,{roomTypeId:room,checkIn:date(5),checkOut:date(8),startsAt:new Date(Date.now()-60000).toISOString(),endsAt:new Date(Date.now()+3600000).toISOString(),price:99,quota:100},admin)).id);
  return {admin,hotel,room,tokens,campaigns,run,in:date(5),out:date(8)};
 }
-function measure(r,expected){latency.add(r.timings.duration);const ok=expected.includes(r.status);unexpected.add(!ok);check(r,{'expected response':()=>ok});if(r.status===200)accepted.add(1);else rejected.add(1);}
-export default function(data){
+function measure(r,expected){latency.add(r.timings.duration+r.timings.blocked);const ok=expected.includes(r.status);unexpected.add(!ok);if(!ok)console.warn(`UNEXPECTED status=${r.status} code=${r.body}`);check(r,{'expected response':()=>ok});if(r.status===200)accepted.add(1);else rejected.add(1);}
+export default function(data){begins.add(Date.now());try{run(data);}finally{ends.add(Date.now());}}
+function run(data){
  if(mode==='cached'||mode==='baseline'){measure(http.get(`${base}/api/hotels/${data.hotel}`),[200]);return;}
  if(mode==='booking'){
   const token=data.tokens[(__VU-1)%data.tokens.length];const q=post('/api/quotes',{roomTypeId:data.room,checkIn:data.in,checkOut:data.out,quantity:1},token);if(q.status!==200){measure(q,[200]);return;}

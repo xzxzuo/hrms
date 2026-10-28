@@ -104,6 +104,7 @@ public class HotelCache {
 
   public void invalidate(long id) {
     redis.delete(key(id));
+    redis.opsForValue().increment(CatalogCache.EPOCH);
   }
 
   private void invalidateQuietly(long id) {

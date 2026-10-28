@@ -17,7 +17,7 @@ flowchart LR
  A --> P[Actuator / Prometheus / Grafana]
 ```
 
-Java 21 + Spring Boot 3.5.16；MyBatis Starter 3.0.5（官方 3.0.x 支持 Boot 3.2–3.5）。Springdoc 2.8.x 对应 Boot 3.5。Spring Security、AMQP、Data Redis、Flyway、MySQL Connector 和 Micrometer 由 Boot BOM 管理，避免手工覆盖传递依赖。测试固定 Testcontainers 1.21.3；具体解析结果由 Maven dependency tree 生成。
+Java 21 + Spring Boot 3.5.16；MyBatis Starter 3.0.5（官方 3.0.x 支持 Boot 3.2–3.5）。Springdoc 2.8.17 对应 Boot 3.5。Spring Security、AMQP、Data Redis、Flyway、MySQL Connector 和 Micrometer 由 Boot BOM 管理，避免手工覆盖传递依赖。测试固定 Testcontainers 1.21.3；具体解析结果由 Maven dependency tree 生成。
 
 依据：[Boot](https://docs.spring.io/spring-boot/3.5/system-requirements.html)、[MyBatis](https://github.com/mybatis/spring-boot-starter)、[Springdoc](https://springdoc.org/#what-is-the-compatibility-matrix-of-springdoc-openapi-with-spring-boot)。版本兼容声明不能替代启动测试。
 
@@ -34,3 +34,5 @@ Java 21 + Spring Boot 3.5.16；MyBatis Starter 3.0.5（官方 3.0.x 支持 Boot 
 
 ## 迭代规则
 先完成 Phase 1 真实 MySQL 启动、迁移、认证、资源归属和日历测试，验证通过后推进交易、缓存、消息、秒杀。每阶段状态以 docs/verification.md 为准，未运行的压测不得填充推测数字。
+
+实际依赖树见evidence/dependencies.txt；Flyway11.7.2在MySQL8.4.7上有供应商验证版本上限警告，真实迁移与功能测试通过；未把实测兼容表述为供应商认证。

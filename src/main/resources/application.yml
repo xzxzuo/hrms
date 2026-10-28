@@ -1,4 +1,8 @@
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 4
   application:
     name: hrms
   datasource:
@@ -9,6 +13,9 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 2
       connection-timeout: 3000
+      data-source-properties:
+        socketTimeout: 3000
+        connectTimeout: 2000
       transaction-isolation: TRANSACTION_READ_COMMITTED
       connection-init-sql: SET SESSION innodb_lock_wait_timeout=5
   data:
@@ -40,7 +47,7 @@ server:
   tomcat:
     threads:
       max: 100
-    accept-count: 100
+    accept-count: 1000
 management:
   metrics:
     distribution:

@@ -45,4 +45,33 @@ class CacheIT extends TestSupport {
       docker.unpauseContainerCmd(Containers.REDIS.getContainerId()).exec();
     }
   }
+
+  @Autowired org.springframework.test.web.servlet.MockMvc mvc;
+
+  @Test
+  void catalogCachesRoomTypesAndInvalidatesWhenHotelCloses() throws Exception {
+    var f = fixture(2, 1);
+    mvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(
+                "/api/room-types/" + f.room()))
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+    mvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(
+                "/api/hotels/popular"))
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.status().isOk());
+    tx.run(
+        () -> {
+          db.exec("UPDATE hotels SET status='CLOSED' WHERE id=?", f.hotel());
+          cache.changed(f.hotel());
+          return null;
+        });
+    mvc.perform(
+            org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get(
+                "/api/room-types/" + f.room()))
+        .andExpect(
+            org.springframework.test.web.servlet.result.MockMvcResultMatchers.status()
+                .isNotFound());
+  }
 }

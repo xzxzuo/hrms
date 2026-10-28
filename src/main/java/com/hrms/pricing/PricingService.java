@@ -20,16 +20,18 @@ public class PricingService {
   public Map<String, Object> quote(
       long user, long room, LocalDate in, LocalDate out, int quantity) {
     var dates = CalendarController.nights(in, out);
-    Problem.require(
-        !in.isBefore(LocalDate.now(ZoneOffset.UTC)) && quantity > 0 && quantity <= 10,
-        400,
-        "INVALID_STAY");
+    Problem.require(quantity > 0 && quantity <= 10, 400, "INVALID_STAY");
     return tx.run(
         () -> {
-          Problem.found(
-              db.one(
-                  "SELECT r.id FROM room_types r JOIN hotels h ON h.id=r.hotel_id WHERE r.id=? AND r.status='ACTIVE' AND h.status='OPEN'",
-                  room));
+          var hotel =
+              Problem.found(
+                  db.one(
+                      "SELECT r.id,h.timezone FROM room_types r JOIN hotels h ON h.id=r.hotel_id WHERE r.id=? AND r.status='ACTIVE' AND h.status='OPEN'",
+                      room));
+          Problem.require(
+              !in.isBefore(LocalDate.now(ZoneId.of((String) hotel.get("timezone")))),
+              400,
+              "INVALID_STAY");
           var rates =
               db.list(
                   "SELECT stay_date,price FROM room_daily_rate WHERE room_type_id=? AND stay_date>=? AND stay_date<? ORDER BY stay_date",

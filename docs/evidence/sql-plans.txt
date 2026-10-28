@@ -1,0 +1,6 @@
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	room_daily_inventory	NULL	range	PRIMARY	PRIMARY	11	NULL	3	100.00	Using where
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	bookings	NULL	range	ix_booking_expiry	ix_booking_expiry	130	NULL	1	100.00	Using where; Using index
+id	select_type	table	partitions	type	possible_keys	key	key_len	ref	rows	filtered	Extra
+1	SIMPLE	outbox_events	NULL	range	ix_outbox_pending	ix_outbox_pending	58	NULL	2	100.00	Using where; Using index

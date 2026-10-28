@@ -1,0 +1,12 @@
+{
+  "hotelId": 9,
+  "roomTypeId": 9,
+  "physicalRoomId": 1,
+  "checkedOutBooking": 606,
+  "refundedBooking": 607,
+  "refundId": 1,
+  "seckillBooking": 608,
+  "campaignId": 16,
+  "reconciliation": "consistent",
+  "via": "http://localhost:8088"
+}

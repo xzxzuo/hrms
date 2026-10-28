@@ -38,7 +38,10 @@ public class Errors {
     return response(409, "CONSTRAINT_CONFLICT", r);
   }
 
-  @ExceptionHandler(DataAccessException.class)
+  @ExceptionHandler({
+    DataAccessException.class,
+    org.springframework.transaction.TransactionException.class
+  })
   ResponseEntity<?> unavailable(Exception e, HttpServletRequest r) {
     return response(503, "DATABASE_UNAVAILABLE", r);
   }

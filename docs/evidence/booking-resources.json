@@ -1,0 +1,72 @@
+[
+  {
+    "epochMs": 1793201326689,
+    "containers": [
+      {
+        "CPUPerc": "413.09%",
+        "MemPerc": "6.04%",
+        "MemUsage": "479.7MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "14.58%",
+        "MemPerc": "7.01%",
+        "MemUsage": "556.5MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "118.76%",
+        "MemPerc": "2.62%",
+        "MemUsage": "208.2MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 11.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 8.0",
+      "hrms_outbox_backlog 0.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 68686,
+      "Innodb_row_lock_waits": 609,
+      "Questions": 135546,
+      "Threads_connected": 16,
+      "Threads_running": 15
+    }
+  },
+  {
+    "epochMs": 1793201329545,
+    "containers": [
+      {
+        "CPUPerc": "10.61%",
+        "MemPerc": "6.50%",
+        "MemUsage": "516MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "4.06%",
+        "MemPerc": "7.04%",
+        "MemUsage": "558.4MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "1.90%",
+        "MemPerc": "1.78%",
+        "MemUsage": "140.9MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 1.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 80.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 81896,
+      "Innodb_row_lock_waits": 677,
+      "Questions": 139495,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  }
+]

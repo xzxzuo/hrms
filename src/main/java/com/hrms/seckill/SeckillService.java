@@ -172,7 +172,20 @@ public class SeckillService implements DomainEventHandler {
 
   private void rebuild(long campaign, boolean force) {
     var lock = gate(campaign).writeLock();
-    acquire(lock);
+    if (force) acquire(lock);
+    else {
+      long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+      while (!lock.tryLock()) {
+        if ("1".equals(redis.opsForValue().get(keys(campaign).get(2)))) return;
+        Problem.require(System.nanoTime() < deadline, 503, "ADMISSION_BUSY");
+        try {
+          Thread.sleep(10);
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new Problem(503, "INTERRUPTED");
+        }
+      }
+    }
     try {
       var keys = keys(campaign);
       if (!force && "1".equals(redis.opsForValue().get(keys.get(2)))) return;

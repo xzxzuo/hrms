@@ -84,7 +84,8 @@ class AdminIT extends TestSupport {
         .andExpect(status().isUnauthorized());
     mvc.perform(get("/v3/api-docs"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.paths['/api/bookings']").exists());
+        .andExpect(jsonPath("$.paths['/api/bookings']").exists())
+        .andExpect(jsonPath("$.components.securitySchemes.bearerAuth.scheme").value("bearer"));
     mvc.perform(post("/api/payment/callback").contentType(MediaType.APPLICATION_JSON).content("{}"))
         .andExpect(status().isBadRequest());
   }

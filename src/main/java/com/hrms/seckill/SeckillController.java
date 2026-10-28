@@ -47,22 +47,30 @@ public class SeckillController {
         "INVALID_CAMPAIGN");
     var rt = Problem.found(db.one("SELECT hotel_id FROM room_types WHERE id=?", c.roomTypeId()));
     Problem.require(Db.id(rt, "hotel_id") == hotel, 403, "HOTEL_FORBIDDEN");
-    return tx.run(
-        () -> {
-          long id =
-              db.insert(
-                  "INSERT INTO seckill_campaigns(hotel_id,room_type_id,check_in,check_out,starts_at,ends_at,price,quota) VALUES(?,?,?,?,?,?,?,?)",
-                  hotel,
-                  c.roomTypeId(),
-                  c.checkIn(),
-                  c.checkOut(),
-                  java.sql.Timestamp.from(c.startsAt()),
-                  java.sql.Timestamp.from(c.endsAt()),
-                  c.price(),
-                  c.quota());
-          audit.log(actor.id(), "CAMPAIGN_CREATE", Long.toString(id));
-          return Map.of("id", id);
-        });
+    var created =
+        tx.run(
+            () -> {
+              long id =
+                  db.insert(
+                      "INSERT INTO seckill_campaigns(hotel_id,room_type_id,check_in,check_out,starts_at,ends_at,price,quota) VALUES(?,?,?,?,?,?,?,?)",
+                      hotel,
+                      c.roomTypeId(),
+                      c.checkIn(),
+                      c.checkOut(),
+                      java.sql.Timestamp.from(c.startsAt()),
+                      java.sql.Timestamp.from(c.endsAt()),
+                      c.price(),
+                      c.quota());
+              audit.log(actor.id(), "CAMPAIGN_CREATE", Long.toString(id));
+              return Map.of("id", id);
+            });
+    boolean ready = true;
+    try {
+      seckill.rebuild(((Number) created.get("id")).longValue());
+    } catch (Exception e) {
+      ready = false;
+    }
+    return Map.of("id", created.get("id"), "admissionReady", ready);
   }
 
   @GetMapping("/admin/hotels/{hotel}/campaigns")

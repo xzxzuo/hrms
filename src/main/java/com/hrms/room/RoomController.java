@@ -16,12 +16,22 @@ public class RoomController {
   private final Tx tx;
   private final Actor actor;
   private final Audit audit;
+  private final com.hrms.hotel.CatalogCache cache;
+  private final com.hrms.hotel.HotelCache hotelCache;
 
-  public RoomController(Db db, Tx tx, Actor actor, Audit audit) {
+  public RoomController(
+      Db db,
+      Tx tx,
+      Actor actor,
+      Audit audit,
+      com.hrms.hotel.CatalogCache cache,
+      com.hrms.hotel.HotelCache hotelCache) {
     this.db = db;
     this.tx = tx;
     this.actor = actor;
     this.audit = audit;
+    this.cache = cache;
+    this.hotelCache = hotelCache;
   }
 
   public record RoomType(
@@ -34,17 +44,25 @@ public class RoomController {
 
   @GetMapping("/hotels/{id}/room-types")
   public List<Map<String, Object>> list(@PathVariable long id) {
-    return db.list(
-        "SELECT r.* FROM room_types r JOIN hotels h ON h.id=r.hotel_id WHERE r.hotel_id=? AND r.status='ACTIVE' AND h.status='OPEN'",
-        id);
+    return cache.get(
+        "hotel-rooms:" + id,
+        new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {},
+        () ->
+            db.list(
+                "SELECT r.* FROM room_types r JOIN hotels h ON h.id=r.hotel_id WHERE r.hotel_id=? AND r.status='ACTIVE' AND h.status='OPEN'",
+                id));
   }
 
   @GetMapping("/room-types/{id}")
   public Map<String, Object> get(@PathVariable long id) {
     return Problem.found(
-        db.one(
-            "SELECT r.* FROM room_types r JOIN hotels h ON h.id=r.hotel_id WHERE r.id=? AND r.status='ACTIVE' AND h.status='OPEN'",
-            id));
+        cache.get(
+            "room-type:" + id,
+            new com.fasterxml.jackson.core.type.TypeReference<Map<String, Object>>() {},
+            () ->
+                db.one(
+                    "SELECT r.* FROM room_types r JOIN hotels h ON h.id=r.hotel_id WHERE r.id=? AND r.status='ACTIVE' AND h.status='OPEN'",
+                    id)));
   }
 
   @PostMapping("/admin/hotels/{id}/room-types")
@@ -62,6 +80,7 @@ public class RoomController {
                   r.basePrice(),
                   r.roomCount(),
                   r.status());
+          hotelCache.changed(id);
           audit.log(actor.id(), "ROOM_TYPE_CREATE", Long.toString(rid));
           return Map.of("id", rid);
         });
@@ -88,6 +107,7 @@ public class RoomController {
                   == 1,
               409,
               "VERSION_CONFLICT");
+          hotelCache.changed(Db.id(old, "hotel_id"));
           audit.log(actor.id(), "ROOM_TYPE_EDIT", Long.toString(id));
           return Map.of("id", id, "version", version + 1);
         });
@@ -95,19 +115,23 @@ public class RoomController {
 
   public record PhysicalRoom(
       @NotBlank @Size(max = 20) String roomNo,
-      @Pattern(regexp = "AVAILABLE|CLEANING|OUT_OF_SERVICE") String status) {}
+      @NotNull @Pattern(regexp = "AVAILABLE|CLEANING|OUT_OF_SERVICE") String status) {}
 
   @PostMapping("/admin/room-types/{id}/rooms")
   public Map<String, Object> physical(@PathVariable long id, @Valid @RequestBody PhysicalRoom r) {
     var rt = Problem.found(db.one("SELECT * FROM room_types WHERE id=?", id));
     actor.hotel(Db.id(rt, "hotel_id"));
-    long rid =
-        db.insert(
-            "INSERT INTO physical_rooms(room_type_id,room_no,status) VALUES(?,?,?)",
-            id,
-            r.roomNo(),
-            r.status());
-    return Map.of("id", rid);
+    return tx.run(
+        () -> {
+          long rid =
+              db.insert(
+                  "INSERT INTO physical_rooms(room_type_id,room_no,status) VALUES(?,?,?)",
+                  id,
+                  r.roomNo(),
+                  r.status());
+          audit.log(actor.id(), "PHYSICAL_ROOM_CREATE", Long.toString(rid));
+          return Map.of("id", rid);
+        });
   }
 
   @GetMapping("/admin/room-types/{id}/rooms")

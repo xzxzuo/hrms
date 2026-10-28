@@ -28,6 +28,8 @@ erDiagram
  users ||--o{ seckill_requests : enters
  seckill_requests |o--o| bookings : creates
  bookings ||--o{ notifications : notifies
+ bookings ||--o{ booking_room_assignments : allocates
+ physical_rooms ||--o{ booking_room_assignments : identifies
 ```
 
 Outbox、processed_messages、audit_logs 是技术/审计实体；outbox aggregate_id 为多态业务引用，不设置跨聚合外键，避免删除策略和多种事件耦合。其生命周期需保留直至投递与审计窗口结束。

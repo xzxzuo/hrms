@@ -51,7 +51,7 @@ class SeckillIT extends TestSupport {
   void thousandConcurrentUsersForHundredQuotas() throws Exception {
     var f = fixture(100, 3);
     long campaign = campaign(f, 100);
-    seckill.rebuild(campaign);
+    // Exercise first-access reconstruction under the full burst as well.
     var users = new ArrayList<Long>();
     for (int i = 0; i < 1000; i++) users.add(user());
     long begin = System.nanoTime();

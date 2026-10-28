@@ -3,6 +3,8 @@
 `sh scripts/start.sh` 启动所有组件、健康检查与演示数据。`./mvnw verify` 使用独立Testcontainers，不删除演示数据。`sh scripts/load.sh cached|baseline|booking|seckill|rate` 生成本地results，不提交凭证或JWT。压测创建独立LoadTest酒店；不用重置已有库存。
 
 ## 运行入口
+默认k6直接通过hrms_default网络访问app:8080；BASE_URL可覆盖，但宿主回环在1000连接突发时观察到少量连接超时。
+
 API8080；Nginx8088；Actuator8081；Rabbit15672；Prometheus9090；Grafana3000（admin/本地.env密码）。所有宿主端口仅绑定127.0.0.1。Grafana预置HRMS Operations dashboard；Prometheus规则在ops/alerts.yml，本地告警可在9090/alerts查看，未配置外部通知渠道。
 
 ## 缓存基准
@@ -23,3 +25,5 @@ GET /api/admin/reconciliation 对比held/sold与booking_nights及订单状态；
 
 ## 容量边界
 单体连接池20、Tomcat100、MQ2..4消费者/prefetch10；HTTP、Redis、confirm和DB锁等待有界。MySQL故障则交易503、不会承诺成功。生产需TLS、secret管理、备份恢复、持久卷规划、监控外部通知及多副本/集群设计；Compose自身不提供这些能力。
+
+最终源码验收包含MySQL真实暂停：API503且不创建订单。管理角色授予、酒店授权、房号创建与后台订单操作的审计均与变更处于同一事务。

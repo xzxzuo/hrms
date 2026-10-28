@@ -1,0 +1,51 @@
+@base = http://localhost:8088
+@token = paste-accessToken-here
+@admin = paste-admin-accessToken-here
+
+### Login (password matches local .env)
+POST {{base}}/api/auth/login
+Content-Type: application/json
+
+{"email":"admin@hrms.local","password":"Demo-password-123"}
+
+### Search
+GET {{base}}/api/hotels?city=Stockholm&guests=2
+
+### Calendar (choose future dates)
+GET {{base}}/api/room-types/1/calendar?checkIn=2026-11-01&checkOut=2026-11-04
+
+### Quote
+POST {{base}}/api/quotes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"roomTypeId":1,"checkIn":"2026-11-01","checkOut":"2026-11-04","quantity":1}
+
+### Create booking: retain both quoteId and clientRequestId on retry
+POST {{base}}/api/bookings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"quoteId":"paste-quote-id","clientRequestId":"reservation-demo-1"}
+
+### Controlled simulated gateway (use your own booking ID)
+POST {{base}}/api/payment/simulate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{"bookingId":1,"providerRef":"demo-payment-1","success":true}
+
+### Cancel
+POST {{base}}/api/bookings/1/cancel
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{}
+
+### Operational state
+GET {{base}}/api/admin/ops
+Authorization: Bearer {{admin}}
+
+### Reconciliation
+GET {{base}}/api/admin/reconciliation
+Authorization: Bearer {{admin}}

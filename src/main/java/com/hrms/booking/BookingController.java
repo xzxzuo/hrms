@@ -15,12 +15,14 @@ public class BookingController {
   private final BookingService bookings;
   private final Actor actor;
   private final Audit audit;
+  private final Tx tx;
 
-  public BookingController(Db db, BookingService bookings, Actor actor, Audit audit) {
+  public BookingController(Db db, BookingService bookings, Actor actor, Audit audit, Tx tx) {
     this.db = db;
     this.bookings = bookings;
     this.actor = actor;
     this.audit = audit;
+    this.tx = tx;
   }
 
   public record Create(
@@ -57,14 +59,17 @@ public class BookingController {
   public Map<String, Object> admin(@PathVariable long id, @PathVariable String action) {
     var b = bookings.get(id);
     actor.hotel(Db.id(b, "hotel_id"));
-    Map<String, Object> result =
-        switch (action) {
-          case "cancel" -> bookings.cancel(id);
-          case "check-in" -> bookings.checkIn(id);
-          case "check-out" -> bookings.checkOut(id);
-          default -> throw new Problem(400, "INVALID_ACTION");
-        };
-    audit.log(actor.id(), "ADMIN_BOOKING_" + action, Long.toString(id));
-    return result;
+    return tx.run(
+        () -> {
+          Map<String, Object> result =
+              switch (action) {
+                case "cancel" -> bookings.cancel(id);
+                case "check-in" -> bookings.checkIn(id);
+                case "check-out" -> bookings.checkOut(id);
+                default -> throw new Problem(400, "INVALID_ACTION");
+              };
+          audit.log(actor.id(), "ADMIN_BOOKING_" + action, Long.toString(id));
+          return result;
+        });
   }
 }

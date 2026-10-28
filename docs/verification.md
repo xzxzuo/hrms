@@ -33,3 +33,20 @@
 
 2026-10-28 16:13 Europe/Stockholm，`mvn -B verify`：26 tests，0 failures/errors/skipped，57.337s，BUILD SUCCESS。hotel-scoped报表、未授权酒店403、对账识别人为制造的held异常、JWT拒绝、实际OpenAPI输出通过。
 完整Docker Compose首次启动成功：MySQL/Redis/RabbitMQ/app/Nginx/Prometheus/Grafana均通过健康检查；Prometheus的hrms和rabbitmq targets均UP；Nginx实际提供OpenAPI；Grafana health为ok。修复Nginx健康检查localhost解析IPv6而只监听IPv4的问题，改127.0.0.1。
+
+
+## Phase 7 最终验收
+
+2026-10-28 16:31 Europe/Stockholm，`mvn -B fmt:format verify dependency:tree`：1项Mockito单元测试 + 28项真实容器集成测试，合计29项，0 failures/errors/skipped，58.688s，BUILD SUCCESS。实际命令使用固定fmt插件坐标2.29；普通复现用`./mvnw -B verify`。
+
+新增验证：房型/热门酒店目录缓存及酒店关闭失效；1000并发首次重建；真实MySQL暂停时HTTP503且没有订单残留；重要管理操作与审计同事务。MySQL socketTimeout=3s、connectTimeout=2s，调度池4线程，避免broker重试阻塞所有到期扫描。
+
+五组k6最终命令全部成功，非预期失败率0；1000 HTTP用户争100配额最终100订单，900售罄；5接纳/7限流；普通100订单全部成功。原始摘要、资源采样、失败首轮和真实EXPLAIN保留在evidence。详细数字和适用范围见performance.md。
+
+版本兼容边界：Boot3.5.16/Java21/MyBatis3.0.5/Springdoc2.8.17已构建、启动并导出OpenAPI；Flyway11.7.2来自BOM，在MySQL8.4.7上仍发验证版本上限警告，已记录而未隐藏。真实迁移/重启成功不等于供应商认证。生产前应按支持矩阵另验。
+
+已交付Phase0..7实现、六项设计、完整DDL、API/HTTP样例、部署监控、故障手册和15问面试材料。单机演示范围与未验证的集群场景见performance.md；不编造历史实习成果或QPS。
+
+最终Nginx HTTP演示已通过：入住退房、优惠券支付重复回调、取消退款完成、异步秒杀及重复请求、最终对账一致；合成数据ID见evidence/http-demo.json。运行时OpenAPI含43条路径。
+
+OpenAPI终稿补充：Bearer JWT Authorize及公开/认证操作标记已由AdminIT定向复测通过（2项集成+1项单元）；部署后校验登录操作security为空、订单操作使用bearerAuth。

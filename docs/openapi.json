@@ -1,1 +1,2245 @@
-{"openapi":"3.1.0","info":{"title":"OpenAPI definition","version":"v0"},"servers":[{"url":"http://localhost","description":"Generated server url"}],"paths":{"/api/admin/users/{id}/roles/{role}":{"put":{"tags":["identity-controller"],"operationId":"role","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"role","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/rooms/{id}/status":{"put":{"tags":["admin-controller"],"operationId":"room","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RoomStatus"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/room-types/{id}":{"put":{"tags":["room-controller"],"operationId":"edit","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"version","in":"query","required":true,"schema":{"type":"integer","format":"int32"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RoomType"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/room-types/{id}/rates":{"put":{"tags":["calendar-controller"],"operationId":"rate","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Rate"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/room-types/{id}/inventory":{"put":{"tags":["calendar-controller"],"operationId":"inventory","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Inventory"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{id}":{"put":{"tags":["hotel-controller"],"operationId":"edit_1","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Hotel"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{id}/status":{"put":{"tags":["hotel-controller"],"operationId":"status","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Status"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{hotelId}/managers/{userId}":{"put":{"tags":["hotel-controller"],"operationId":"manager","parameters":[{"name":"hotelId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"userId","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/seckill/{campaign}/requests":{"post":{"tags":["seckill-controller"],"operationId":"request","parameters":[{"name":"campaign","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/quotes":{"post":{"tags":["pricing-controller"],"operationId":"quote","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Quote"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/payment/simulate":{"post":{"tags":["payment-controller"],"operationId":"simulate","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Simulate"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/payment/callback":{"post":{"tags":["payment-controller"],"operationId":"callback","parameters":[{"name":"X-Signature","in":"header","required":true,"schema":{"type":"string"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Callback"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/coupons/{id}/claim":{"post":{"tags":["coupon-controller"],"operationId":"claim","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/bookings":{"get":{"tags":["booking-controller"],"operationId":"mine","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}},"post":{"tags":["booking-controller"],"operationId":"create","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Create"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/bookings/{id}/refund":{"post":{"tags":["payment-controller"],"operationId":"refund","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/bookings/{id}/cancel":{"post":{"tags":["booking-controller"],"operationId":"cancel","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/auth/register":{"post":{"tags":["identity-controller"],"operationId":"register","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Credentials"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/auth/login":{"post":{"tags":["identity-controller"],"operationId":"login","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Credentials"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/room-types/{id}/rooms":{"get":{"tags":["room-controller"],"operationId":"physicalList","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}},"post":{"tags":["room-controller"],"operationId":"physical","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/PhysicalRoom"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/refunds/{id}/complete":{"post":{"tags":["payment-controller"],"operationId":"complete","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/outbox/{id}/replay":{"post":{"tags":["admin-controller"],"operationId":"replay","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels":{"post":{"tags":["hotel-controller"],"operationId":"create_1","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Hotel"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{id}/room-types":{"post":{"tags":["room-controller"],"operationId":"create_2","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/RoomType"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{hotel}/coupons":{"get":{"tags":["coupon-controller"],"operationId":"list","parameters":[{"name":"hotel","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}},"post":{"tags":["coupon-controller"],"operationId":"create_3","parameters":[{"name":"hotel","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Coupon"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{hotel}/campaigns":{"get":{"tags":["seckill-controller"],"operationId":"list_1","parameters":[{"name":"hotel","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}},"post":{"tags":["seckill-controller"],"operationId":"create_4","parameters":[{"name":"hotel","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Campaign"}}},"required":true},"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/campaigns/{id}/rebuild":{"post":{"tags":["seckill-controller"],"operationId":"rebuild","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/bookings/{id}/{action}":{"post":{"tags":["booking-controller"],"operationId":"admin","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"action","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/seckill/requests/{id}":{"get":{"tags":["seckill-controller"],"operationId":"result","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"string"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/room-types/{id}":{"get":{"tags":["room-controller"],"operationId":"get","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/room-types/{id}/calendar":{"get":{"tags":["calendar-controller"],"operationId":"calendar","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"checkIn","in":"query","required":true,"schema":{"type":"string","format":"date"}},{"name":"checkOut","in":"query","required":true,"schema":{"type":"string","format":"date"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}}},"/api/me":{"get":{"tags":["identity-controller"],"operationId":"me","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/me/coupons":{"get":{"tags":["coupon-controller"],"operationId":"mine_1","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}}},"/api/hotels":{"get":{"tags":["hotel-controller"],"operationId":"search","parameters":[{"name":"city","in":"query","required":false,"schema":{"type":"string","default":"","maxLength":80,"minLength":0}},{"name":"guests","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":1,"minimum":1}},{"name":"maxPrice","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":999999,"minimum":0}},{"name":"offset","in":"query","required":false,"schema":{"type":"integer","format":"int32","default":0,"minimum":0}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}}},"/api/hotels/{id}":{"get":{"tags":["hotel-controller"],"operationId":"detail","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64","minimum":1}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/hotels/{id}/room-types":{"get":{"tags":["room-controller"],"operationId":"list_2","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}}},"/api/bookings/{id}":{"get":{"tags":["booking-controller"],"operationId":"get_1","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/bookings/{id}/payments":{"get":{"tags":["payment-controller"],"operationId":"list_3","parameters":[{"name":"id","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/reconciliation":{"get":{"tags":["admin-controller"],"operationId":"check","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/ops":{"get":{"tags":["admin-controller"],"operationId":"ops","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{hotel}/report":{"get":{"tags":["admin-controller"],"operationId":"report","parameters":[{"name":"hotel","in":"path","required":true,"schema":{"type":"integer","format":"int64"}},{"name":"date","in":"query","required":true,"schema":{"type":"string","format":"date"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"object","additionalProperties":{}}}}}}}},"/api/admin/hotels/{hotel}/bookings":{"get":{"tags":["admin-controller"],"operationId":"orders","parameters":[{"name":"hotel","in":"path","required":true,"schema":{"type":"integer","format":"int64"}}],"responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}}},"/api/admin/audit":{"get":{"tags":["admin-controller"],"operationId":"audit","responses":{"200":{"description":"OK","content":{"*/*":{"schema":{"type":"array","items":{"type":"object","additionalProperties":{}}}}}}}}}},"components":{"schemas":{"RoomStatus":{"type":"object","properties":{"status":{"type":"string","pattern":"AVAILABLE|CLEANING|OUT_OF_SERVICE"}},"required":["status"]},"RoomType":{"type":"object","properties":{"name":{"type":"string","maxLength":100,"minLength":0},"bedType":{"type":"string","maxLength":50,"minLength":0},"capacity":{"type":"integer","format":"int32","maximum":20,"minimum":1},"basePrice":{"type":"number","minimum":0.01},"roomCount":{"type":"integer","format":"int32","minimum":1},"status":{"type":"string","pattern":"ACTIVE|INACTIVE"}},"required":["basePrice","bedType","name","status"]},"Rate":{"type":"object","properties":{"date":{"type":"string","format":"date"},"price":{"type":"number","minimum":0.01}},"required":["date","price"]},"Inventory":{"type":"object","properties":{"date":{"type":"string","format":"date"},"total":{"type":"integer","format":"int32","minimum":0},"blocked":{"type":"integer","format":"int32","minimum":0},"saleStatus":{"type":"string","pattern":"OPEN|CLOSED"}},"required":["date","saleStatus"]},"Hotel":{"type":"object","properties":{"name":{"type":"string","maxLength":120,"minLength":0},"city":{"type":"string","maxLength":80,"minLength":0},"address":{"type":"string","maxLength":255,"minLength":0},"timezone":{"type":"string","minLength":1},"facilities":{"type":"array","items":{"type":"string","maxLength":60,"minLength":0},"uniqueItems":true},"images":{"type":"array","items":{"type":"string","maxLength":500,"minLength":0}}},"required":["address","city","facilities","images","name","timezone"]},"Status":{"type":"object","properties":{"status":{"type":"string","pattern":"DRAFT|OPEN|CLOSED"}}},"Quote":{"type":"object","properties":{"roomTypeId":{"type":"integer","format":"int64"},"checkIn":{"type":"string","format":"date"},"checkOut":{"type":"string","format":"date"},"quantity":{"type":"integer","format":"int32","maximum":10,"minimum":1}},"required":["checkIn","checkOut"]},"Simulate":{"type":"object","properties":{"bookingId":{"type":"integer","format":"int64"},"providerRef":{"type":"string","minLength":1,"pattern":"[A-Za-z0-9_-]{1,100}"},"success":{"type":"boolean"}},"required":["providerRef"]},"Callback":{"type":"object","properties":{"bookingId":{"type":"integer","format":"int64"},"providerRef":{"type":"string","minLength":1,"pattern":"[A-Za-z0-9_-]{1,100}"},"amount":{"type":"number","minimum":0},"success":{"type":"boolean"},"timestamp":{"type":"integer","format":"int64"}},"required":["amount","providerRef"]},"Create":{"type":"object","properties":{"quoteId":{"type":"string","maxLength":36,"minLength":0},"clientRequestId":{"type":"string","minLength":1,"pattern":"[A-Za-z0-9_-]{1,80}"},"couponId":{"type":"integer","format":"int64"}},"required":["clientRequestId","quoteId"]},"Credentials":{"type":"object","properties":{"email":{"type":"string","format":"email","maxLength":190,"minLength":0},"password":{"type":"string","maxLength":72,"minLength":10}},"required":["email","password"]},"PhysicalRoom":{"type":"object","properties":{"roomNo":{"type":"string","maxLength":20,"minLength":0},"status":{"type":"string","pattern":"AVAILABLE|CLEANING|OUT_OF_SERVICE"}},"required":["roomNo"]},"Coupon":{"type":"object","properties":{"name":{"type":"string","maxLength":100,"minLength":0},"discount":{"type":"number","minimum":0.01},"minTotal":{"type":"number","minimum":0},"expiresAt":{"type":"string","format":"date-time"},"quota":{"type":"integer","format":"int32","minimum":1}},"required":["discount","expiresAt","minTotal","name"]},"Campaign":{"type":"object","properties":{"roomTypeId":{"type":"integer","format":"int64"},"checkIn":{"type":"string","format":"date"},"checkOut":{"type":"string","format":"date"},"startsAt":{"type":"string","format":"date-time"},"endsAt":{"type":"string","format":"date-time"},"price":{"type":"number","minimum":0.01},"quota":{"type":"integer","format":"int32","maximum":100000,"minimum":1}},"required":["checkIn","checkOut","endsAt","price","startsAt"]}}}}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "HRMS REST API",
+    "description": "Hotel reservation and operations; CNY amounts and UTC timestamps.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/api/admin/users/{id}/roles/{role}": {
+      "put": {
+        "tags": [
+          "identity-controller"
+        ],
+        "operationId": "role",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/rooms/{id}/status": {
+      "put": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "room",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomStatus"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/room-types/{id}": {
+      "put": {
+        "tags": [
+          "room-controller"
+        ],
+        "operationId": "edit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomType"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/room-types/{id}/rates": {
+      "put": {
+        "tags": [
+          "calendar-controller"
+        ],
+        "operationId": "rate",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/room-types/{id}/inventory": {
+      "put": {
+        "tags": [
+          "calendar-controller"
+        ],
+        "operationId": "inventory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Inventory"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{id}": {
+      "put": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "edit_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Hotel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{id}/status": {
+      "put": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "status",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Status"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{hotelId}/managers/{userId}": {
+      "put": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "manager",
+        "parameters": [
+          {
+            "name": "hotelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seckill/{campaign}/requests": {
+      "post": {
+        "tags": [
+          "seckill-controller"
+        ],
+        "operationId": "request",
+        "parameters": [
+          {
+            "name": "campaign",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/quotes": {
+      "post": {
+        "tags": [
+          "pricing-controller"
+        ],
+        "operationId": "quote",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Quote"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/payment/simulate": {
+      "post": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "simulate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Simulate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/payment/callback": {
+      "post": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "callback",
+        "parameters": [
+          {
+            "name": "X-Signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Callback"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/coupons/{id}/claim": {
+      "post": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "claim",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/bookings": {
+      "get": {
+        "tags": [
+          "booking-controller"
+        ],
+        "operationId": "mine",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "booking-controller"
+        ],
+        "operationId": "create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Create"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/bookings/{id}/refund": {
+      "post": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "refund",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/bookings/{id}/cancel": {
+      "post": {
+        "tags": [
+          "booking-controller"
+        ],
+        "operationId": "cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "identity-controller"
+        ],
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "identity-controller"
+        ],
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/admin/room-types/{id}/rooms": {
+      "get": {
+        "tags": [
+          "room-controller"
+        ],
+        "operationId": "physicalList",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "room-controller"
+        ],
+        "operationId": "physical",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhysicalRoom"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/refunds/{id}/complete": {
+      "post": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "complete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/outbox/{id}/replay": {
+      "post": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "replay",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels": {
+      "post": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "create_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Hotel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{id}/room-types": {
+      "post": {
+        "tags": [
+          "room-controller"
+        ],
+        "operationId": "create_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RoomType"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{hotel}/coupons": {
+      "get": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "list",
+        "parameters": [
+          {
+            "name": "hotel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "create_3",
+        "parameters": [
+          {
+            "name": "hotel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Coupon"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{hotel}/campaigns": {
+      "get": {
+        "tags": [
+          "seckill-controller"
+        ],
+        "operationId": "list_1",
+        "parameters": [
+          {
+            "name": "hotel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "seckill-controller"
+        ],
+        "operationId": "create_4",
+        "parameters": [
+          {
+            "name": "hotel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Campaign"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/campaigns/{id}/rebuild": {
+      "post": {
+        "tags": [
+          "seckill-controller"
+        ],
+        "operationId": "rebuild",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/bookings/{id}/{action}": {
+      "post": {
+        "tags": [
+          "booking-controller"
+        ],
+        "operationId": "admin",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/seckill/requests/{id}": {
+      "get": {
+        "tags": [
+          "seckill-controller"
+        ],
+        "operationId": "result",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/room-types/{id}": {
+      "get": {
+        "tags": [
+          "room-controller"
+        ],
+        "operationId": "get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/room-types/{id}/calendar": {
+      "get": {
+        "tags": [
+          "calendar-controller"
+        ],
+        "operationId": "calendar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "checkIn",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "checkOut",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/me": {
+      "get": {
+        "tags": [
+          "identity-controller"
+        ],
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/me/coupons": {
+      "get": {
+        "tags": [
+          "coupon-controller"
+        ],
+        "operationId": "mine_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/hotels": {
+      "get": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "search",
+        "parameters": [
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "maxLength": 80,
+              "minLength": 0
+            }
+          },
+          {
+            "name": "guests",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1,
+              "minimum": 1
+            }
+          },
+          {
+            "name": "maxPrice",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 999999,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/hotels/{id}": {
+      "get": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/hotels/{id}/room-types": {
+      "get": {
+        "tags": [
+          "room-controller"
+        ],
+        "operationId": "list_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/hotels/popular": {
+      "get": {
+        "tags": [
+          "hotel-controller"
+        ],
+        "operationId": "popular",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/bookings/{id}": {
+      "get": {
+        "tags": [
+          "booking-controller"
+        ],
+        "operationId": "get_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/bookings/{id}/payments": {
+      "get": {
+        "tags": [
+          "payment-controller"
+        ],
+        "operationId": "list_3",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/reconciliation": {
+      "get": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/ops": {
+      "get": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "ops",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{hotel}/report": {
+      "get": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "report",
+        "parameters": [
+          {
+            "name": "hotel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/hotels/{hotel}/bookings": {
+      "get": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "orders",
+        "parameters": [
+          {
+            "name": "hotel",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/admin/audit": {
+      "get": {
+        "tags": [
+          "admin-controller"
+        ],
+        "operationId": "audit",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RoomStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "pattern": "AVAILABLE|CLEANING|OUT_OF_SERVICE"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "RoomType": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "bedType": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "capacity": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 20,
+            "minimum": 1
+          },
+          "basePrice": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "roomCount": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "pattern": "ACTIVE|INACTIVE"
+          }
+        },
+        "required": [
+          "basePrice",
+          "bedType",
+          "name",
+          "status"
+        ]
+      },
+      "Rate": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.01
+          }
+        },
+        "required": [
+          "date",
+          "price"
+        ]
+      },
+      "Inventory": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "total": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "blocked": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          "saleStatus": {
+            "type": "string",
+            "pattern": "OPEN|CLOSED"
+          }
+        },
+        "required": [
+          "date",
+          "saleStatus"
+        ]
+      },
+      "Hotel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 0
+          },
+          "city": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 0
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "timezone": {
+            "type": "string",
+            "minLength": 1
+          },
+          "facilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 60,
+              "minLength": 0
+            },
+            "uniqueItems": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 500,
+              "minLength": 0
+            }
+          }
+        },
+        "required": [
+          "address",
+          "city",
+          "facilities",
+          "images",
+          "name",
+          "timezone"
+        ]
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "pattern": "DRAFT|OPEN|CLOSED"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "Quote": {
+        "type": "object",
+        "properties": {
+          "roomTypeId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "checkIn": {
+            "type": "string",
+            "format": "date"
+          },
+          "checkOut": {
+            "type": "string",
+            "format": "date"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 10,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "checkIn",
+          "checkOut"
+        ]
+      },
+      "Simulate": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "providerRef": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "[A-Za-z0-9_-]{1,100}"
+          },
+          "success": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "providerRef"
+        ]
+      },
+      "Callback": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "providerRef": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "[A-Za-z0-9_-]{1,100}"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "success": {
+            "type": "boolean"
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "amount",
+          "providerRef"
+        ]
+      },
+      "Create": {
+        "type": "object",
+        "properties": {
+          "quoteId": {
+            "type": "string",
+            "maxLength": 36,
+            "minLength": 0
+          },
+          "clientRequestId": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "[A-Za-z0-9_-]{1,80}"
+          },
+          "couponId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "clientRequestId",
+          "quoteId"
+        ]
+      },
+      "Credentials": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 190,
+            "minLength": 0
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 72,
+            "minLength": 10
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "PhysicalRoom": {
+        "type": "object",
+        "properties": {
+          "roomNo": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 0
+          },
+          "status": {
+            "type": "string",
+            "pattern": "AVAILABLE|CLEANING|OUT_OF_SERVICE"
+          }
+        },
+        "required": [
+          "roomNo",
+          "status"
+        ]
+      },
+      "Coupon": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "discount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "minTotal": {
+            "type": "number",
+            "minimum": 0
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "quota": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "discount",
+          "expiresAt",
+          "minTotal",
+          "name"
+        ]
+      },
+      "Campaign": {
+        "type": "object",
+        "properties": {
+          "roomTypeId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "checkIn": {
+            "type": "string",
+            "format": "date"
+          },
+          "checkOut": {
+            "type": "string",
+            "format": "date"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "quota": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 100000,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "checkIn",
+          "checkOut",
+          "endsAt",
+          "price",
+          "startsAt"
+        ]
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

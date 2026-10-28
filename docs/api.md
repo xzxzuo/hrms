@@ -8,7 +8,7 @@
 | GET | /api/me | 当前主体 |
 | PUT | /api/admin/users/{id}/roles/{role} | ADMIN |
 | GET | /api/hotels?city=&guests=&maxPrice=&offset= | OPEN酒店 + ACTIVE房型过滤 |
-| GET | /api/hotels/{id}、/api/hotels/{id}/room-types、/api/room-types/{id} | 公开上架资源 |
+| GET | /api/hotels/popular、/api/hotels/{id}、/api/hotels/{id}/room-types、/api/room-types/{id} | 公开上架资源 |
 | POST / PUT | /api/admin/hotels、/api/admin/hotels/{id} | 创建限ADMIN；修改需要hotel scope |
 | PUT | /api/admin/hotels/{id}/status | 上下架：DRAFT/OPEN/CLOSED |
 | PUT | /api/admin/hotels/{hotelId}/managers/{userId} | ADMIN 授权酒店 |

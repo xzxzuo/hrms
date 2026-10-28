@@ -1,0 +1,46 @@
+{
+  "epochMs": 1793201835850,
+  "ops": {
+    "outbox": [
+      {
+        "count": 1138,
+        "status": "SENT"
+      }
+    ],
+    "queuedSeckill": 0,
+    "workQueue": {
+      "QUEUE_NAME": "hrms.work",
+      "QUEUE_MESSAGE_COUNT": 0,
+      "QUEUE_CONSUMER_COUNT": 2
+    },
+    "deadQueue": {
+      "QUEUE_NAME": "hrms.dead",
+      "QUEUE_MESSAGE_COUNT": 0,
+      "QUEUE_CONSUMER_COUNT": 0
+    },
+    "brokerAvailable": true
+  },
+  "reconciliation": {
+    "inventoryMismatches": [],
+    "limit": 100,
+    "campaignMismatches": []
+  },
+  "hrms.work": {
+    "messages": 0,
+    "messages_ready": 0,
+    "messages_unacknowledged": 0,
+    "consumers": 2
+  },
+  "hrms.expiry": {
+    "messages": 408,
+    "messages_ready": 408,
+    "messages_unacknowledged": 0,
+    "consumers": 0
+  },
+  "hrms.dead": {
+    "messages": 0,
+    "messages_ready": 0,
+    "messages_unacknowledged": 0,
+    "consumers": 0
+  }
+}

@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 set -eu
-mvn -B verify "$@"
+cd "$(dirname "$0")/.."
+./mvnw -B verify "$@"

@@ -18,13 +18,21 @@ public class IdentityController {
   private final PasswordEncoder encoder;
   private final JwtEncoder jwt;
   private final Actor actor;
+  private final com.hrms.observability.Audit audit;
 
-  public IdentityController(Db db, Tx tx, PasswordEncoder encoder, JwtEncoder jwt, Actor actor) {
+  public IdentityController(
+      Db db,
+      Tx tx,
+      PasswordEncoder encoder,
+      JwtEncoder jwt,
+      Actor actor,
+      com.hrms.observability.Audit audit) {
     this.db = db;
     this.tx = tx;
     this.encoder = encoder;
     this.jwt = jwt;
     this.actor = actor;
+    this.audit = audit;
   }
 
   public record Credentials(
@@ -92,10 +100,14 @@ public class IdentityController {
   public Map<String, Object> role(@PathVariable long id, @PathVariable String role) {
     actor.admin();
     Problem.require(Set.of("USER", "HOTEL_MANAGER", "ADMIN").contains(role), 400, "INVALID_ROLE");
-    db.exec(
-        "INSERT IGNORE INTO user_roles(user_id,role_id) SELECT ?,id FROM roles WHERE name=?",
-        id,
-        role);
-    return Map.of("userId", id, "role", role);
+    return tx.run(
+        () -> {
+          db.exec(
+              "INSERT IGNORE INTO user_roles(user_id,role_id) SELECT ?,id FROM roles WHERE name=?",
+              id,
+              role);
+          audit.log(actor.id(), "ROLE_GRANT", id + ":" + role);
+          return Map.of("userId", id, "role", role);
+        });
   }
 }

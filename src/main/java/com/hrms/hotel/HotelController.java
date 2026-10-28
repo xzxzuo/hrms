@@ -19,13 +19,16 @@ public class HotelController {
   private final Actor actor;
   private final Audit audit;
   private final HotelCache cache;
+  private final CatalogCache catalog;
 
-  public HotelController(Db db, Tx tx, Actor actor, Audit audit, HotelCache cache) {
+  public HotelController(
+      Db db, Tx tx, Actor actor, Audit audit, HotelCache cache, CatalogCache catalog) {
     this.db = db;
     this.tx = tx;
     this.actor = actor;
     this.audit = audit;
     this.cache = cache;
+    this.catalog = catalog;
   }
 
   public record Hotel(
@@ -36,7 +39,7 @@ public class HotelController {
       @NotNull Set<@Size(max = 60) String> facilities,
       @NotNull List<@Size(max = 500) String> images) {}
 
-  public record Status(@Pattern(regexp = "DRAFT|OPEN|CLOSED") String status) {}
+  public record Status(@NotNull @Pattern(regexp = "DRAFT|OPEN|CLOSED") String status) {}
 
   @GetMapping("/hotels")
   public List<Map<String, Object>> search(
@@ -44,13 +47,32 @@ public class HotelController {
       @RequestParam(defaultValue = "1") @Min(1) int guests,
       @RequestParam(defaultValue = "999999") @Min(0) int maxPrice,
       @RequestParam(defaultValue = "0") @Min(0) int offset) {
-    return db.list(
-        "SELECT h.* FROM hotels h WHERE h.status='OPEN' AND (?='' OR h.city=?) AND EXISTS (SELECT 1 FROM room_types r WHERE r.hotel_id=h.id AND r.status='ACTIVE' AND r.capacity>=? AND r.base_price<=?) ORDER BY h.id LIMIT 50 OFFSET ?",
-        city,
-        city,
-        guests,
-        maxPrice,
-        offset);
+    return catalog.get(
+        "search:"
+            + java.util.Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(
+                    (city + "|" + guests + "|" + maxPrice + "|" + offset)
+                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)),
+        new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {},
+        () ->
+            db.list(
+                "SELECT h.* FROM hotels h WHERE h.status='OPEN' AND (?='' OR h.city=?) AND EXISTS (SELECT 1 FROM room_types r WHERE r.hotel_id=h.id AND r.status='ACTIVE' AND r.capacity>=? AND r.base_price<=?) ORDER BY h.id LIMIT 50 OFFSET ?",
+                city,
+                city,
+                guests,
+                maxPrice,
+                offset));
+  }
+
+  @GetMapping("/hotels/popular")
+  public List<Map<String, Object>> popular() {
+    return catalog.get(
+        "popular",
+        new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {},
+        () ->
+            db.list(
+                "SELECT h.id,h.name,h.city,COUNT(b.id) AS reservations FROM hotels h LEFT JOIN bookings b ON b.hotel_id=h.id AND b.status IN ('CONFIRMED','CHECKED_IN','CHECKED_OUT') WHERE h.status='OPEN' GROUP BY h.id,h.name,h.city ORDER BY reservations DESC,h.id LIMIT 10"));
   }
 
   @GetMapping("/hotels/{id}")
@@ -121,8 +143,13 @@ public class HotelController {
   @PutMapping("/admin/hotels/{hotelId}/managers/{userId}")
   public Map<String, Object> manager(@PathVariable long hotelId, @PathVariable long userId) {
     actor.admin();
-    db.exec("INSERT IGNORE INTO hotel_managers(hotel_id,user_id) VALUES(?,?)", hotelId, userId);
-    return Map.of("hotelId", hotelId, "userId", userId);
+    return tx.run(
+        () -> {
+          db.exec(
+              "INSERT IGNORE INTO hotel_managers(hotel_id,user_id) VALUES(?,?)", hotelId, userId);
+          audit.log(actor.id(), "HOTEL_MANAGER_GRANT", hotelId + ":" + userId);
+          return Map.of("hotelId", hotelId, "userId", userId);
+        });
   }
 
   private String json(Object value) {

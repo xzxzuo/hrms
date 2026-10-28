@@ -1,0 +1,37 @@
+[
+  {
+    "epochMs": 1793201379991,
+    "containers": [
+      {
+        "CPUPerc": "8.49%",
+        "MemPerc": "6.84%",
+        "MemUsage": "542.9MiB / 7.751GiB",
+        "Name": "hrms-app-1"
+      },
+      {
+        "CPUPerc": "8.90%",
+        "MemPerc": "7.08%",
+        "MemUsage": "561.8MiB / 7.751GiB",
+        "Name": "hrms-mysql-1"
+      },
+      {
+        "CPUPerc": "4.81%",
+        "MemPerc": "1.79%",
+        "MemUsage": "142.2MiB / 7.751GiB",
+        "Name": "hrms-rabbitmq-1"
+      }
+    ],
+    "gauges": [
+      "hikaricp_connections_active{pool=\"HikariPool-1\"} 0.0",
+      "hikaricp_connections_pending{pool=\"HikariPool-1\"} 0.0",
+      "hrms_outbox_backlog 67.0"
+    ],
+    "mysql": {
+      "Innodb_row_lock_time": 94234,
+      "Innodb_row_lock_waits": 872,
+      "Questions": 158695,
+      "Threads_connected": 21,
+      "Threads_running": 2
+    }
+  }
+]
