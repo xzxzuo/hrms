@@ -24,3 +24,7 @@
 ## Phase 4
 
 2026-10-28 16:06 Europe/Stockholm，`mvn -B verify`：18 tests，0 failures/errors/skipped，35.991s，BUILD SUCCESS。确认真实persistent消息/Publisher Confirm、manual ACK、重复eventId只有一次notification效果；未知事件回滚processed标记，经200ms/1s/5s三档重试进入DLQ。暂停RabbitMQ时目标事件attempts=1且仍NEW，恢复后SENT并完成消费。修正事务帮助类：已处于事务时只加入，不在已失败事务内部重试；最外层执行全事务重试。
+
+## Phase 5
+
+2026-10-28 16:10 Europe/Stockholm，`mvn -B verify`：24 tests，0 failures/errors/skipped，45.094s，BUILD SUCCESS。1000个虚拟线程用户争100配额，100个成功订单，3晚各held=100/available=0；这是进程内service并发测试，不是HTTP QPS。另验证真实库存3/配额10只能成功3、失败7补偿，Redis丢失后从MySQL重建remaining=7；成功订单取消回补每日库存但不返还活动额度。同用户4并发一个请求；无效用户FK导致持久化失败后额度恢复；模拟进程崩溃留下Lua预扣租约，30s对账恢复；活动前后拒绝；Redis暂停503且无数据库请求；消费者停后恢复正确处理排队订单。

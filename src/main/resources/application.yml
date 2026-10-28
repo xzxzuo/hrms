@@ -10,6 +10,7 @@ spring:
       minimum-idle: 2
       connection-timeout: 3000
       transaction-isolation: TRANSACTION_READ_COMMITTED
+      connection-init-sql: SET SESSION innodb_lock_wait_timeout=5
   data:
     redis:
       host: ${REDIS_HOST:localhost}
