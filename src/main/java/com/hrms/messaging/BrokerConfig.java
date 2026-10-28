@@ -1,0 +1,6 @@
+package com.hrms.messaging;
+import org.springframework.context.annotation.*;import org.springframework.amqp.core.*;import org.springframework.beans.factory.annotation.Value;import java.util.*;
+@Configuration public class BrokerConfig {
+ public static final String EXCHANGE="hrms.events",WORK="hrms.work",DEAD="hrms.dead";
+ @Bean Declarables topology(@Value("${hrms.booking-ttl-seconds}") int ttl){var ex=new DirectExchange(EXCHANGE,true,false);var dlx=new DirectExchange("hrms.dlx",true,false);var work=QueueBuilder.durable(WORK).deadLetterExchange("hrms.dlx").deadLetterRoutingKey("dead").build();var dead=new org.springframework.amqp.core.Queue(DEAD,true);var delay=QueueBuilder.durable("hrms.expiry").ttl(ttl*1000).deadLetterExchange(EXCHANGE).deadLetterRoutingKey("work").build();var items=new ArrayList<Declarable>(List.of(ex,dlx,work,dead,delay,BindingBuilder.bind(work).to(ex).with("work"),BindingBuilder.bind(dead).to(dlx).with("dead"),BindingBuilder.bind(delay).to(ex).with("expiry")));int[] delays={200,1000,5000};for(int i=0;i<delays.length;i++){var queue=QueueBuilder.durable("hrms.retry."+i).ttl(delays[i]).deadLetterExchange(EXCHANGE).deadLetterRoutingKey("work").build();items.add(queue);items.add(BindingBuilder.bind(queue).to(ex).with("retry."+i));}return new Declarables(items);}
+}

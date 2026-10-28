@@ -20,3 +20,7 @@
 ## Phase 3
 
 2026-10-28 16:03 Europe/Stockholm，`mvn -B verify`：15 tests，0 failures/errors/skipped，25.619s，BUILD SUCCESS。缓存测试验证命中、空值30s、事务提交后失效、Redis真实暂停时回源且普通下单正确。Redisson配置lazy initialization，避免Redis不在线阻止普通业务启动；超时和重试有界。缓存前后性能对比脚本与实测记录将在综合验收提供，当前不填QPS。
+
+## Phase 4
+
+2026-10-28 16:06 Europe/Stockholm，`mvn -B verify`：18 tests，0 failures/errors/skipped，35.991s，BUILD SUCCESS。确认真实persistent消息/Publisher Confirm、manual ACK、重复eventId只有一次notification效果；未知事件回滚processed标记，经200ms/1s/5s三档重试进入DLQ。暂停RabbitMQ时目标事件attempts=1且仍NEW，恢复后SENT并完成消费。修正事务帮助类：已处于事务时只加入，不在已失败事务内部重试；最外层执行全事务重试。
